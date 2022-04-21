@@ -2,7 +2,6 @@ from secrets import choice
 from django.db import models
 from pytz import timezone
 
-
 class Peran(models.IntegerChoices):
     ADMIN = 0
     PEMBERI = 1

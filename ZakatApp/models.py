@@ -26,7 +26,6 @@ class Pengguna(models.Model):
     alamat = models.CharField(max_length=500, null=True)
     jumlah_anggota_keluarga = models.IntegerField(null=True)
     foto = models.CharField(max_length=500, null=True)
-    status = models.IntegerField(choices=Status.choices, null=True)
 
 
 class Jadwal(models.Model):

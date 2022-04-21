@@ -5,7 +5,8 @@
     <div class="container">
         <div class="mx-auto mt-5 px-3" style="max-width: 500px;">
             <img src="{% static 'img/logo.png' %}" alt="logo" width="300" class="mx-auto d-block my-5">
-            <form action="">
+            <form action="http://127.0.0.1:8000/pengguna" method="POST">
+                {% csrf_token %}
                 <div class="form-group">
                     <label for="username" class="pb-1 pt-3">Nama Pengguna</label>
                     <input type="text" class="form-control form-input" name="username" id="username"

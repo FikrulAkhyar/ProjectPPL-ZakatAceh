@@ -6,7 +6,7 @@ class PenggunaSerializers(serializers.ModelSerializer):
     class Meta:
         model = Pengguna
         fields = ('pengguna_id', 'peran', 'username', 'password', 'email', 'nama',
-                  'nomor_hp', 'nomor_kk', 'alamat', 'jumlah_anggota_keluarga', 'foto', 'status')
+                  'nomor_hp', 'nomor_kk', 'alamat', 'jumlah_anggota_keluarga', 'foto')
 
 
 class JadwalSerializers(serializers.ModelSerializer):

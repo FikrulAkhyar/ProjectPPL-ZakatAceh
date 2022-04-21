@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from ZakatApp.models import Pengguna, Penerima, Jadwal, Pembayaran
 from ZakatApp.serializers import PenggunaSerializers, PenerimaSerializers, JadwalSerializers, PembayaranSerializers
@@ -20,7 +20,7 @@ def penggunaApi(request, id=0):
         penggunas_serializer = PenggunaSerializers(data=pengguna_data)
         if penggunas_serializer.is_valid():
             penggunas_serializer.save()
-            return JsonResponse("Data berhasil ditambahkan!", safe=False)
+            return JsonResponse("Berhasil mendaftar!", safe=False)
         return JsonResponse("Gagal menambahkan data!", safe=False)
     elif request.method == 'PUT':
         pengguna_data = JSONParser().parse(request)
@@ -141,7 +141,16 @@ def signup(request):
 
 
 def homeAdmin(request):
-    return render(request, 'admin/home.html')
+    if request.method == 'GET':
+        return render(request, 'admin/home.html')
+    if request.method == 'POST':
+        jadwal_data = {
+            "tanggal_mulai_pembayaran": request.POST['mulaibayar'],
+            "tanggal_akhir_pembayaran": request.POST['akhirbayar'],
+            "tanggal_mulai_penyaluran": request.POST['mulaipenyaluran'],
+            "tanggal_akhir_pembayaran": request.POST['akhirpenyaluran'],
+            "harga_beras": request.POST['hargaberas'],
+        }
 
 
 def pemberiAdmin(request):

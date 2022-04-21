@@ -22,9 +22,9 @@ urlpatterns = [
     re_path(r'^login', views.login),
     re_path(r'^signup', views.signup),
 
-    re_path(r'^~/home', views.homeAdmin),
-    re_path(r'^~/pemberi', views.pemberiAdmin),
-    re_path(r'^~/penerima', views.penerimaAdmin),
+    re_path(r'^operator/home', views.homeAdmin),
+    re_path(r'^operator/pemberi', views.pemberiAdmin),
+    re_path(r'^operator/penerima', views.penerimaAdmin),
 
     re_path(r'^user/home', views.homeUser),
     re_path(r'^user/profile', views.profileUser),

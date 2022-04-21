@@ -15,6 +15,9 @@
     <div class="container">
         <div class="mx-auto content">
             <div class="pt-5 px-5">
+                {% if message %}
+                    <div>{{message}}</div>
+                {% endif %}
                 <div class="pb-2">Jadwal Pembayaran Zakat</div>
                 <button class="btn w-100" data-bs-toggle="modal" data-bs-target="#editJadwal">
                     <div class="text-center jadwal fw-bold">
@@ -103,22 +106,23 @@
                         <h4 class="fw-bold">Atur Jadwal</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="" id="form-edit-jadwal" class="px-3">
+                    <form action="/operator/home" id="form-edit-jadwal" class="px-3" method="POST">
+                        {% csrf_token %}
                         <div class="form-group">
                             <label for="jadwalmulai" class="pb-1 pt-3">Jadwal Mulai Pembayaran</label>
-                            <input type="date" class="form-control form-input" name="mulaibayar" id="mulaibayar">
+                            <input type="date" class="tm form-control form-input" name="mulaibayar" id="mulaibayar" data-date-format="YYYY-MM-DD" placeholder="yyyy-mm-dd" required>
                         </div>
                         <div class="form-group">
                             <label for="jadwalakhir" class="pb-1 pt-3">Jadwal Akhir Pembayaran</label>
-                            <input type="date" class="form-control form-input" name="akhirbayar" id="akhirbayar">
+                            <input type="date" class="tm form-control form-input" name="akhirbayar" id="akhirbayar" data-date-format="YYYY-MM-DD" placeholder="yyyy-mm-dd" required>
                         </div>
                         <div class="form-group">
                             <label for="jadwalmulai" class="pb-1 pt-3">Jadwal Mulai Penyaluran</label>
-                            <input type="date" class="form-control form-input" name="mulaipenyaluran" id="mulaipenyaluran">
+                            <input type="date" class="tm form-control form-input" name="mulaipenyaluran" id="mulaipenyaluran" data-date-format="YYYY-MM-DD" placeholder="yyyy-mm-dd" required>
                         </div>
                         <div class="form-group">
                             <label for="jadwalakhir" class="pb-1 pt-3">Jadwal Akhir Penyaluran</label>
-                            <input type="date" class="form-control form-input" name="akhirpenyaluran" id="akhirpenyaluran">
+                            <input type="date" class="tm form-control form-input" name="akhirpenyaluran" id="akhirpenyaluran" data-date-format="YYYY-MM-DD" placeholder="yyyy-mm-dd" required>
                         </div>
                         <div class="form-group">
                             <label for="hargaberas" class="pb-1 pt-3">Harga Beras</label>
@@ -127,7 +131,7 @@
                     </form>
                     <div class="pt-3 text-center pb-2">
                         <button type="button" class="btn btn-no me-3" data-bs-dismiss="modal">Batal</button>
-                        <a href=""><button type="button" class="btn btn-yes">Simpan</button></a>
+                        <button type="submit" class="btn btn-yes" form="form-edit-jadwal">Simpan</button>
                     </div>
                 </div>
             </div>
@@ -148,18 +152,25 @@
         integrity="sha512-hAJgR+pK6+s492clbGlnrRnt2J1CJK6kZ82FZy08tm6XG2Xl/ex9oVZLE6Krz+W+Iv4Gsr8U2mGMdh0ckRH61Q=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <script type="text/javascript">
-        $(document).ready(function () {
-
-            // Format mata uang.
-            $('#hargaberas').mask('000.000.000', { reverse: true });
-
-        })
-    </script>
     <script>
         $(function () {
                 $('[data-toggle="tooltip"]').tooltip()
             })
+    </script>
+
+    <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js">
+    </script>
+
+    <script>
+        $(".tm").on("change", function() {
+        this.setAttribute(
+            "data-date",
+            moment(this.value, "YYYY-MM-DD")
+            .format( this.getAttribute("data-date-format") )
+        )
+        }).trigger("change")
+    
     </script>
 </body>
 

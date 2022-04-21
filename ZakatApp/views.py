@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
@@ -7,6 +8,8 @@ from ZakatApp.models import Pengguna, Penerima, Jadwal, Pembayaran
 from ZakatApp.serializers import PenggunaSerializers, PenerimaSerializers, JadwalSerializers, PembayaranSerializers
 
 from django.core.files.storage import default_storage
+
+from datetime import datetime
 
 
 @csrf_exempt
@@ -148,9 +151,19 @@ def homeAdmin(request):
             "tanggal_mulai_pembayaran": request.POST['mulaibayar'],
             "tanggal_akhir_pembayaran": request.POST['akhirbayar'],
             "tanggal_mulai_penyaluran": request.POST['mulaipenyaluran'],
-            "tanggal_akhir_pembayaran": request.POST['akhirpenyaluran'],
-            "harga_beras": request.POST['hargaberas'],
+            "tanggal_akhir_penyaluran": request.POST['akhirpenyaluran'],
+            "harga_beras": int(request.POST['hargaberas'])
         }
+        
+        jadwals_serializer = JadwalSerializers(data=jadwal_data)
+        
+        # return JsonResponse(jadwal_data, safe=False)
+    
+        if jadwals_serializer.is_valid():
+            jadwals_serializer.save()
+            message = "Berhasil mengubah jadwal!"
+            return redirect('/operator/home', message)
+        return JsonResponse("Gagal menambahkan jadwal!", safe=False)
 
 
 def pemberiAdmin(request):

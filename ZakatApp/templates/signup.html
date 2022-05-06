@@ -5,7 +5,14 @@
     <div class="container">
         <div class="mx-auto mt-5 px-3" style="max-width: 800px;">
             <img src="{% static 'img/logo.png' %}" alt="logo" width="300" class="mx-auto d-block">
-            <form action="http://127.0.0.1:8000/pengguna" method="POST">
+            {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="alert alert-danger mt-3">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+            {% endif %}
+            <form action="http://127.0.0.1:8000/signup" method="POST">
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="username" class="pb-1 pt-3">Nama Pengguna</label>
@@ -53,7 +60,7 @@
                 </div>
             </form>
             <div class="text-center mt-3">
-                <p>Sudah Punya Akun ? <a href="login" class="linkTo">Masuk</a></p>
+                <p>Sudah Punya Akun ? <a href="/login" class="linkTo">Masuk</a></p>
             </div>
         </div>
     </div>

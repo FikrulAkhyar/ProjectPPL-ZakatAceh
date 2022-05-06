@@ -17,20 +17,24 @@ urlpatterns = [
     re_path(r'^pembayaran$', views.pembayaranApi),
     re_path(r'^pembayaran/([0-9]+)$', views.pembayaranApi),
 
-    re_path(r'^pengguna/savefile', views.saveFile),
+    re_path(r'^pemberi/savefile', views.saveFile),
 
-    re_path(r'^login', views.login),
+    re_path(r'^login', views.loginPengguna, name='login'),
+    re_path(r'^logout', views.logoutPengguna, name='logout'),
     re_path(r'^signup', views.signup),
 
-    re_path(r'^operator/home', views.homeAdmin),
-    re_path(r'^operator/pemberi', views.pemberiAdmin),
-    re_path(r'^operator/penerima', views.penerimaAdmin),
+    re_path(r'^operator/home', views.homeOperator),
+    re_path(r'^operator/pemberi', views.pemberiOperator),
+    # re_path(r'^ubahStatus', views.ubahStatusPemberi),
+    re_path(r'^operator/pemberi/ubahStatus', views.ubahStatusPemberi),
+    re_path(r'^operator/penerima', views.penerimaOperator),
+    re_path(r'^operator/penerima/ubahStatus', views.ubahStatusPenerima),
 
-    re_path(r'^user/home', views.homeUser),
-    re_path(r'^user/profile', views.profileUser),
-    re_path(r'^user/history', views.historyUser),
-    re_path(r'^user/payment', views.paymentUser),
-    re_path(r'^user/paymethod', views.paymethodUser),
-    re_path(r'^user/scanqr', views.scanqrUser),
+    re_path(r'^pemberi/home', views.homePemberi),
+    re_path(r'^pemberi/profile', views.profilePemberi),
+    re_path(r'^pemberi/history', views.historyPemberi),
+    re_path(r'^pemberi/payment', views.paymentPemberi),
+    re_path(r'^pemberi/paymethod', views.paymethodPemberi),
+    re_path(r'^pemberi/scanqr', views.scanqrPemberi),
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

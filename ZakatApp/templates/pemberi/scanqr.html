@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+    <div class="sticky-top">
+        <div class="header">
+            <div class="container">
+                <div class="mx-auto px-3" style="max-width: 500px;">
+                    <p class="pt-3 fw-bold" style="font-size: x-large; color: white;">Bayar Zakat</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="mx-auto content">
+            <div class="pt-3 px-4">
+                <a href="paymethod"><button class="btn btn-back"><i class="fas fa-angle-left fa-2x"></i></button></a>
+            </div>
+            <div class="pt-4 px-5 text-center">
+                <img src="{% static 'img/dana-qr.jpeg' %}" alt="QRCode Dana" height="250">
+            </div>
+
+            <div class="pt-4 px-5">
+                <div class="d-flex justify-content-between">
+                    <p>Total Zakat</p>
+                    <p class="fw-bold">Rp. 175.000,00</p>
+                </div>
+                <a href="history"><button class="btn btn-orange">Sudah Bayar</button></a>
+            </div>
+
+            <div class="pt-4 px-5">
+                <div class="info p-4 text-center">
+                    <div class="info-title fw-bold">
+                        Petunjuk
+                    </div>
+                    <div class="info-content">
+                        Tekan tombol sudah bayar jika sudah melakukan pembayaran melalui kode QR yang tersedia.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fixed-bottom">
+            <div class="mx-auto footer">
+                <div class="d-flex justify-content-between pt-2 px-5">
+                    <div class="text-center px-3">
+                        <a href="history" class="linkmenu">
+                            <i class="fad fa-list-ul fa-2x"></i>
+                            <br>Riwayat
+                        </a>
+                    </div>
+                    <div class="text-center px-3">
+                        <a href="home" class="linkmenu active" id="beranda">
+                            <i class="fad fa-home fa-2x"></i>
+                            <br>Beranda
+                        </a>
+                    </div>
+                    <div class="text-center px-3">
+                        <a href="profile" class="linkmenu">
+                            <i class="fad fa-user fa-2x"></i>
+                            <br>Akun Saya
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+{% endblock %}

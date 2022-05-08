@@ -7,6 +7,11 @@
             <div class="container">
                 <div class="mx-auto px-3" style="max-width: 500px;">
                     <p class="pt-3 fw-bold" style="font-size: x-large; color: white;">Pemberi Zakat</p>
+                    {% for d in data %}
+                        
+                        <div class="alert alert-danger mt-3">{{ d }}</div>
+                        
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -75,7 +80,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form action="" id="form-edit-status" class="px-3" method="POST">
-                        <input type="hidden" name="id" id="id">
+                        <input type="hidden" name="id" id="id" value="">
                         <div class="form-group">
                             <label for="status" class="pb-1 pt-3">Status Pembayaran</label>
                             <select class="form-control form-input" name="status" id="status">
@@ -88,7 +93,7 @@
                     </form>
                     <div class="pt-3 text-center pb-2">
                         <button type="button" class="btn btn-no me-3" data-bs-dismiss="modal">Batal</button>
-                        <a href="/ubahStatus"><button type="button" class="btn btn-yes">Simpan</button></a>
+                        <button type="button" class="btn btn-yes">Simpan</button>
                     </div>
                 </div>
             </div>

@@ -13,83 +13,56 @@
     </div>
     <div class="container">
         <div class="mx-auto content">
+            {% for d in data %}
+            {% if d.nomor_kk == null or d.alamat == null %}
             <div class="bg-danger w-100 text-white fw-bold text-center px-3" style="height: 100px;">
                 <i class="fas fa-exclamation-circle fa-2x text-white pt-3"></i>
                 <p class="pb-3">Harap lengkapi data anda sebelum melakukan pembayaran zakat</p>
             </div>
+            {% endif %}
             <div class="profile text-center pt-3">
                 <img class="rounded-circle mb-2" src="{% static 'img/profile.png' %}" alt="Foto Profil" width="100">
-                <p>fikrul18 <br> <span class="fw-bold">Fikrul Akhyar</span></p>
+                <p>{{ d.username }}<br> <span class="fw-bold">{{ d.nama }}</span></p>
+            </div>
+            <div class="d-flex justify-content-end me-5">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ubahProfile" data-toggle="tooltip" data-placement="top" title="Edit Profile">Ubah data</button>
             </div>
             <div class="data px-5">
                 <table>
                     <tr>
-                        <form action="" id="form-update-email">
-                            <td width="90%">
-                                <div class="form-group">
-                                    <label for="email" class="fw-bold">Email</label>
-                                    <p id="email">fikrul18@gmail.com</p>
-                                </div>
-                            </td>
-                            <td>
-                                <button id="btn-edit-email" type="button" class="btn btn-edit" data-toggle="tooltip" data-placement="top" title="Edit Email"><i class="fad fa-edit fa-lg"></i></button>
-                                <button id="btn-submit-email" form="form-update-email" type="submit" class="btn btn-edit" data-toggle="tooltip" data-placement="top" title="Ubah Email"><i class="fad fa-check-circle fa-lg"></i></button>
-                            </td>
-                        </form>
-                    </tr>
-                    <tr>
-                        <form action="" id="form-update-nohp">
-                            <td width="90%">
-                                <div class="form-group">
-                                    <label for="nohp" class="fw-bold">Nomor Telepon</label>
-                                    <p id="nohp">082261189789</p>
-                                </div>
-                            </td>
-                            <td>
-                                <button id="btn-edit-nohp" type="button" class="btn btn-edit" data-toggle="tooltip" data-placement="top" title="Edit Nomor Telepon"><i class="fad fa-edit fa-lg"></i></button>
-                                <button id="btn-submit-nohp" form="form-update-nohp" type="submit" class="btn btn-edit" data-toggle="tooltip"
-                                    data-placement="top" title="Ubah Nomor Telepon"><i class="fad fa-check-circle fa-lg"></i></button>
-                            </td>
-                        </form>
-                    </tr>
-                    <tr>
-                        <form action="" id="form-update-nokk">
-                            <td width="90%">
-                                <div class="form-group">
-                                    <label for="nokk" class="fw-bold">Nomor Kartu Keluarga</label>
-                                    <p id="nokk"></p>
-                                </div>
-                            </td>
-                            <td>
-                                <button id="btn-edit-nokk" type="button" class="btn btn-edit" data-toggle="tooltip" data-placement="top" title="Edit Nomor KK"><i class="fad fa-edit fa-lg"></i></button>
-                                <button id="btn-submit-nokk" form="form-update-nokk" type="submit" class="btn btn-edit" data-toggle="tooltip"
-                                    data-placement="top" title="Ubah Nomor KK"><i class="fad fa-check-circle fa-lg"></i></button>
-                            </td>
-                        </form>
-                    </tr>
-                    <tr>
-                        <form action="" id="form-update-alamat">
-                            <td width="90%">
-                                <div class="form-group">
-                                    <label for="alamat" class="fw-bold">Alamat</label>
-                                    <p id="alamat"></p>
-                                </div>
-                            </td>
-                            <td>
-                                <button id="btn-edit-alamat" type="button" class="btn btn-edit" data-toggle="tooltip" data-placement="top" title="Edit Alamat"><i class="fad fa-edit fa-lg"></i></button>
-                                <button id="btn-submit-alamat" form="form-update-alamat" type="submit" class="btn btn-edit" data-toggle="tooltip" data-placement="top" title="Ubah Alamat"><i class="fad fa-check-circle fa-lg"></i></button>
-                            </td>
-                        </form>
-                    </tr>
-                    <tr>
-                        <td>
-                            <p>Ubah Kata Sandi</p>
+                        <td width="90%">
+                            <div class="form-group">
+                                <label for="email" class="fw-bold">Email</label>
+                                <p id="email">{{ d.email }}</p>
+                            </div>
                         </td>
-                        <td>
-                            <button class="btn btn-edit" data-bs-toggle="modal" data-bs-target="#ubahPassword" data-toggle="tooltip" data-placement="top" title="Edit Kata Sandi"><i class="fad fa-edit fa-lg"></i></button>
+                    </tr>
+                    <tr>
+                        <td width="90%">
+                            <div class="form-group">
+                                <label for="nohp" class="fw-bold">Nomor Telepon</label>
+                                <p id="nohp">{{ d.nomor_hp }}</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="90%">
+                            <div class="form-group">
+                                <label for="nokk" class="fw-bold">Nomor Kartu Keluarga</label>
+                                <p id="nokk">{{ d.nomor_kk }}</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="90%">
+                            <div class="form-group">
+                                <label for="alamat" class="fw-bold">Alamat</label>
+                                <p id="alamat">{{ d.alamat }}</p>
+                            </div>
                         </td>
                     </tr>
                 </table>
+                {% endfor %}
                 
             </div>
         </div>
@@ -120,29 +93,57 @@
         </div>
     </div>
 
-    <!-- Modal Ubah Kata Sandi -->
-    <div class="modal fade" id="ubahPassword" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="ubahPasswordLabel" aria-hidden="true">
+
+    <!-- Modal ubah data profile -->
+    <div class="modal fade" id="ubahProfile" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="ubahProfileLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content mx-auto" style="background-color: #F9F9FB; border-radius: 10px; max-width: 1000px;">
                 <div class="modal-body">
                     <div class="d-flex justify-content-between">
-                        <h4 class="fw-bold">Ubah Kata Sandi</h4>
+                        <h4 class="fw-bold">Ubah Profile</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="" id="form-ubah-password" class="px-3">
+                    <form action="/pemberi/ubahProfile" id="form-ubah-profile" class="px-3" method="POST">
+                        {% csrf_token %}
+                        {% for d in data %}
                         <div class="form-group">
-                            <label for="oldpassword" class="pb-1 pt-3">Password Lama</label>
-                            <input class="form-control form-input" type="password" id="oldpassword" name="oldpassword" placeholder="masukkan password lama">
+                            <label for="email" class="pb-1 pt-3">Email</label>
+                            {% if d.email %}
+                            <input class="form-control form-input" type="email" id="email" name="email" value="{{ d.email }}">
+                            {% else %}
+                            <input class="form-control form-input" type="email" id="email" name="email" placeholder="masukkan email">
+                            {% endif %}
                         </div>
                         <div class="form-group">
-                            <label for="newpassword" class="pb-1 pt-3">Password Baru</label>
-                            <input class="form-control form-input" type="password" id="newpassword" name="newpassword" placeholder="masukkan password baru">
+                            <label for="nohp" class="pb-1 pt-3">Nomor HP</label>
+                            {% if d.nomor_hp %}
+                            <input class="form-control form-input" type="text" id="nohp" name="nohp"value="{{ d.nomor_hp }}">
+                            {% else %}
+                            <input class="form-control form-input" type="text" id="nohp" name="nohp" placeholder="masukkan nomor HP">
+                            {% endif %}
                         </div>
+                        <div class="form-group">
+                            <label for="nokk" class="pb-1 pt-3">Nomor KK</label>
+                            {% if d.nomor_kk %}
+                            <input class="form-control form-input" type="text" id="nokk" name="nokk"value="{{ d.nomor_kk }}">
+                            {% else %}
+                            <input class="form-control form-input" type="text" id="nokk" name="nokk" placeholder="masukkan nomor KK">
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            <label for="alamat" class="pb-1 pt-3">Alamat</label>
+                            {% if d.alamat %}
+                            <input class="form-control form-input" type="text" id="alamat" name="alamat" value="{{ d.alamat }}">
+                            {% else %}
+                            <input class="form-control form-input" type="text" id="alamat" name="alamat" placeholder="masukkan alamat">
+                            {% endif %}
+                        </div>
+                        {% endfor %}
                     </form>
                     <div class="pt-3 text-center pb-2">
                         <button type="button" class="btn btn-no me-3" data-bs-dismiss="modal">Batal</button>
-                        <button type="button" class="btn btn-yes" form="form-ubah-password">Ubah</button>
+                        <button type="submit" class="btn btn-yes" form="form-ubah-profile">Ubah</button>
                     </div>
                 </div>
             </div>
@@ -163,10 +164,10 @@
                 $('[data-toggle="tooltip"]').tooltip()
             })
 
-        if($('#email').text() == "") $('#email').html('Belum Diisi').addClass('text-danger')
-        if($('#nohp').text() == "") $('#nohp').html('Belum Diisi').addClass('text-danger')
-        if($('#nokk').text() == "") $('#nokk').html('Belum Diisi').addClass('text-danger') 
-        if($('#alamat').text() == "") $('#alamat').html('Belum Diisi').addClass('text-danger')
+        if($('#email').text() == "None") $('#email').html('Belum Diisi').addClass('text-danger')
+        if($('#nohp').text() == "None") $('#nohp').html('Belum Diisi').addClass('text-danger')
+        if($('#nokk').text() == "None") $('#nokk').html('Belum Diisi').addClass('text-danger') 
+        if($('#alamat').text() == "None") $('#alamat').html('Belum Diisi').addClass('text-danger')
 
         $('#btn-submit-email').hide()
         $('#btn-submit-nohp').hide()

@@ -202,7 +202,10 @@ def loginPengguna(request):
         # Perbaiki cara penanganan pengguna tidak ditemukan !
         if pengguna == None :
             messages.error(request, 'Pengguna tidak ditemukan!')
-            return redirect('/signup')
+            return redirect('/login')
+        
+        request.session['pengguna_id'] = pengguna.pengguna_id
+        request.session['peran_pengguna'] = pengguna.peran
         
         if pengguna.peran == 0 :
             return redirect('/operator/home')
@@ -241,7 +244,8 @@ def homeOperator(request):
 
 
 def pemberiOperator(request):
-    return render(request, 'operator/pemberi.html')
+    data = Pembayaran.objects.filter()
+    return render(request, 'operator/pemberi.html', {'data' : data})
 
 
 def penerimaOperator(request):
@@ -271,7 +275,20 @@ def homePemberi(request):
 
 
 def profilePemberi(request):
-    return render(request, 'pemberi/profile.html')
+    pengguna_id = request.session['pengguna_id']
+    data = Pengguna.objects.filter(pengguna_id = pengguna_id)
+    return render(request, 'pemberi/profile.html', {'data' : data})
+
+def ubahProfile(request):
+    if request.method == 'POST' :
+        email = request.POST['email']
+        nohp = request.POST['nohp']
+        nokk = request.POST['nokk']
+        alamat = request.POST['alamat']
+        pengguna_id = request.session['pengguna_id']
+        Pengguna.objects.filter(pengguna_id = pengguna_id).update(email = email, nomor_hp = nohp, nomor_kk = nokk, alamat = alamat)
+        
+        return redirect('/pemberi/profile')
 
 
 def historyPemberi(request):

@@ -32,6 +32,7 @@ urlpatterns = [
 
     re_path(r'^pemberi/home', views.homePemberi),
     re_path(r'^pemberi/profile', views.profilePemberi),
+    re_path(r'^pemberi/ubahProfile', views.ubahProfile),
     re_path(r'^pemberi/history', views.historyPemberi),
     re_path(r'^pemberi/payment', views.paymentPemberi),
     re_path(r'^pemberi/paymethod', views.paymethodPemberi),

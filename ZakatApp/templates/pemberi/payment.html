@@ -16,12 +16,24 @@
             <div class="pt-3 px-4">
                 <a href="home"><button class="btn btn-back"><i class="fas fa-angle-left fa-2x"></i></button></a>
             </div>
-            <div class="pt-4 px-5">
-                <div class="form-group">
-                    <label for="jumlah" class="pb-1">Jumlah Pemberi Zakat</label>
-                    <input type="number" class="form-control form-input" name="jumlah" id="jumlah" placeholder="Masukkan jumlah pemberi zakat">
+            {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="px-3">
+                        <div class="alert alert-danger mt-3">{{ message }}</div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            {% endif %}
+            <form action="/pemberi/payment" id="form-payment" class="px-3" method="POST">
+                {% csrf_token %}
+                <div class="pt-4 px-5">
+                    <div class="form-group">
+                        <label for="jumlah" class="pb-1">Jumlah Pemberi Zakat</label>
+                        <input type="number" class="form-control form-input" name="jumlah" id="jumlah" placeholder="Masukkan jumlah pemberi zakat">
+                    </div>
                 </div>
-            </div>
+            </form>
 
             <div class="pt-4 px-5">
                 <div class="px-3 harga fw-bold">
@@ -33,7 +45,7 @@
             </div>
 
             <div class="pt-4 px-5">
-                <a href="paymethod"><button class="btn btn-orange">Bayar Sekarang</button></a>
+                <button type="submit" class="btn btn-orange" form="form-payment">Bayar Sekarang</button>
             </div>
 
             <div class="pt-4 px-5">
@@ -83,7 +95,7 @@
         integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <script>
+    <script type="text/javascript">
         var hargaberas = 14000;
         $('#jumlah').on('input', () => {
             var jumlah = $('#jumlah').val()

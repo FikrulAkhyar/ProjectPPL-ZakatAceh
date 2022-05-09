@@ -1,4 +1,4 @@
-from tkinter import Entry
+from email import message
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
@@ -6,6 +6,7 @@ from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.contrib.auth import logout
+import datetime
 # from django.contrib.auth.decorators import login_required
 
 from ZakatApp.models import Pengguna, Penerima, Jadwal, Pembayaran
@@ -197,12 +198,9 @@ def loginPengguna(request):
         try :
             pengguna = Pengguna.objects.get(username = username, password = password)
         except Pengguna.DoesNotExist :
-            pengguna = None
-        
-        # Perbaiki cara penanganan pengguna tidak ditemukan !
-        if pengguna == None :
             messages.error(request, 'Pengguna tidak ditemukan!')
             return redirect('/login')
+            
         
         request.session['pengguna_id'] = pengguna.pengguna_id
         request.session['peran_pengguna'] = pengguna.peran
@@ -271,8 +269,13 @@ def ubahStatusPenerima(request) :
 
 
 def homePemberi(request):
-    return render(request, 'pemberi/home.html')
-
+    jadwal = Jadwal.objects.latest('jadwal_id')
+    mulai_pembayaran = jadwal.tanggal_mulai_pembayaran
+    akhir_pembayaran = jadwal.tanggal_akhir_pembayaran
+    
+    return render(request, 'pemberi/home.html', {'mulai_pembayaran' : mulai_pembayaran, 'akhir_pembayaran' : akhir_pembayaran})
+    # return render(request, 'pemberi/home.html', {'data' : nominal})
+ 
 
 def profilePemberi(request):
     pengguna_id = request.session['pengguna_id']
@@ -292,16 +295,78 @@ def ubahProfile(request):
 
 
 def historyPemberi(request):
-    return render(request, 'pemberi/history.html')
+    pengguna_id = request.session['pengguna_id']
+    try :
+        data = Pembayaran.objects.filter(pemberi_id = pengguna_id)
+        
+        for d in data :
+            if d.status == 0 :
+                d.status = 'Gagal'
+            elif d.status == 1 :
+                d.status = 'Menunggu'
+            elif d.status == 2 :
+                d.status = 'Diterima'
+        
+        return render(request, 'pemberi/history.html', {'data' : data})
+    except :
+        render(request, 'pemberi/history.html')
 
 
 def paymentPemberi(request):
-    return render(request, 'pemberi/payment.html')
+    if request.method == 'GET' :
+        return render(request, 'pemberi/payment.html')
+    elif request.method == 'POST' :
+        jumlah_pemberi_zakat = request.POST['jumlah']
+        
+        if jumlah_pemberi_zakat == '' :
+            messages.error(request, "Harap isi jumlah pemberi zakat!")
+            return redirect('/pemberi/payment')
+        
+        nominal = int(2.5 * 14000 * int(jumlah_pemberi_zakat))
+        
+        return render(request, 'pemberi/paymethod.html', {'nominal': nominal})
 
 
 def paymethodPemberi(request):
-    return render(request, 'pemberi/paymethod.html')
+    if request.method == 'GET' :
+        # pengguna_id = request.session['pengguna_id']
+        # data = Pembayaran.objects.get(pemberi_id = pengguna_id)
+        # nominal = data.nominal
+        
+        # return render(request, 'pemberi/paymethod.html', {'nominal' : nominal})
+        return render(request, 'pemberi/paymethod.html', {'nominal' : nominal})
+    elif request.method == 'POST' :
+        pengguna_id = request.session['pengguna_id']
+        jadwal_id = Jadwal.objects.latest('jadwal_id').jadwal_id
+        nominal = request.POST['nominal']
+        status = 1
+        
+        pemberi_data = {
+            'pemberi_id': pengguna_id,
+            'jadwal_id': jadwal_id,
+            'nominal': nominal,
+            'status': status
+        }
+        
+        pembayaran_serializer = PembayaranSerializers(data = pemberi_data)
+        
+        if pembayaran_serializer.is_valid() :
+            pembayaran_serializer.save()
+        
+            return redirect('/pemberi/scanqr')
+
+        return JsonResponse(pemberi_data, safe=False)
 
 
 def scanqrPemberi(request):
-    return render(request, 'pemberi/scanqr.html')
+    try :
+        pengguna_id = request.session['pengguna_id']
+        pembayaran = Pembayaran.objects.filter(pemberi_id = pengguna_id, jadwal_id = Jadwal.objects.latest('jadwal_id'))
+        
+        for p in pembayaran :
+            nominal = p.nominal
+        
+        return render(request, 'pemberi/scanqr.html', {'nominal' : nominal})
+    except :
+        return render(request, 'pemberi/scanqr.html', {'nominal' : 0})
+

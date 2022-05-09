@@ -18,15 +18,25 @@
                     <th width="85%">Pembayaran Zakat</th>
                     <th class="text-center">Status</th>
                 </tr>
+                {% if data %}
+                {% for d in data %}
                 <tr>
                     <td>
-                        02 Mei 2022<br>
-                        Rp. 175.000,00
+                        {{ d.tanggal}}<br>
+                        {{ d.nominal }}
                     </td>
                     <td>
-                        <div class="status-waiting text-center">Menunggu</div>
+                        <div class="status-waiting text-center">{{ d.status }}</div>
                     </td>
                 </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td>
+                        <div class="alert alert-info mt-3">Maaf, Anda belum pernah membayar zakat</div>
+                    </td>
+                </tr>
+                {% endif %}
              </table>
         </div>
 

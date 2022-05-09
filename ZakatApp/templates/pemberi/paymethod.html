@@ -43,9 +43,13 @@
             <div class="pt-5 px-5">
                 <div class="d-flex justify-content-between">
                     <p>Total Zakat</p>
-                    <p class="fw-bold">Rp. 175.000,00</p>
+                    <p class="fw-bold">Rp. {{ nominal }}</p>
                 </div>
-                <a href="scanqr"><button class="btn btn-orange">Bayar Sekarang</button></a>
+                <form action="/pemberi/paymethod" id="form-bayar" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="nominal" id="nominal" value={{ nominal }}>
+                </form>
+                <button type="submit" class="btn btn-orange" form="form-bayar">Bayar Sekarang</button>
             </div>
 
             <div class="pt-4 px-5">

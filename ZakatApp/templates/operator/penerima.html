@@ -15,28 +15,44 @@
     <div class="container">
         <div class="mx-auto content px-5 pt-5">
             <div>
-                <div class="pb-2">Jadwal Pembayaran Zakat</div>
+                <div class="pb-2">Jadwal Penyaluran Zakat</div>
                 <div class="text-center jadwal fw-bold">
-                    01 Mei 2022 - 10 Mei 2022
+                    {{data.mulaipenyaluran}} - {{data.akhirpenyaluran}}
                 </div>
             </div>
 
-            <table class="mt-5">
+            <table class="mt-5" style="width: 100%;">
                 <tr>
-                    <th width="85%">Penerima Zakat</th>
+                    <th width="50%">Penerima Zakat</th>
                     <th class="text-center">Status</th>
                 </tr>
-                <tr>
-                    <td>
-                        <button class="btn" data-bs-toggle="modal" data-bs-target="#editPenerima">
-                            <p class="text-start">Fulan <br> 1111100000033333</p>
-                        </button>
-                    </td>
-                    <td>
-                        <button class="btn status-waiting text-center" data-bs-toggle="modal"
-                            data-bs-target="#editStatus">Menunggu</button>
-                    </td>
-                </tr>
+                {% if data.penerima %}
+                    {% for penerima in data.penerima %}
+                    <tr>
+                        <td>
+                            <button class="btn" data-bs-toggle="modal" data-bs-target="#editPenerima{{ penerima.penerima_id }}">
+                                <p class="text-start">{{ penerima.nama }} <br> {{ penerima.nomor_kk }}</p>
+                            </button>
+                        </td>
+                        <td>
+                            {% if penerima.status == 1 %}
+                                <button class="btn status-waiting text-center" data-bs-toggle="modal"
+                                    data-bs-target="#editStatus{{ penerima.penerima_id }}">Menunggu</button>
+                            {% elif penerima.status == 2 %}
+                                <button class="btn status-success text-center" data-bs-toggle="modal"
+                                    data-bs-target="#editStatus{{ penerima.penerima_id }}">Berhasil</button>
+                            {% else %}
+                                <button class="btn status-error text-center" data-bs-toggle="modal"
+                                    data-bs-target="#editStatus{{ penerima.penerima_id }}">Error</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr class="text-center pt-5">
+                        <td colspan="2">Tidak ada Data</td>
+                    </tr>
+                {% endif %}
             </table>
             
         </div>
@@ -45,19 +61,19 @@
             <div class="mx-auto footer">
                 <div class="d-flex justify-content-between pt-2 px-5">
                     <div class="text-center px-3">
-                        <a href="pemberi" class="linkmenu">
+                        <a href="/operator/pemberi" class="linkmenu">
                             <i class="fad fa-hand-holding-usd fa-2x"></i>
                             <br>Pemberi
                         </a>
                     </div>
                     <div class="text-center px-3">
-                        <a href="home" class="linkmenu" id="beranda">
+                        <a href="/operator/home" class="linkmenu" id="beranda">
                             <i class="fad fa-home fa-2x"></i>
                             <br>Beranda
                         </a>
                     </div>
                     <div class="text-center px-3">
-                        <a href="penerima" class="linkmenu active">
+                        <a href="/operator/penerima" class="linkmenu active">
                             <i class="fad fa-handshake fa-2x"></i>
                             <br>Penerima
                         </a>
@@ -67,77 +83,99 @@
         </div>
     </div>
 
-    <!-- Modal Edit Status -->
-    <div class="modal fade" id="editStatus" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="editStatusLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content mx-auto"
-                style="background-color: #F9F9FB; border-radius: 10px; max-width: 1000px;">
-                <div class="modal-body px-3">
-                    <div class="d-flex justify-content-between">
-                        <h4 class="fw-bold">Edit Status Pembayaran</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <form action="" id="form-edit-status" class="px-3" method="POST">
-                        <input type="hidden" name="id" id="id">
-                        <div class="form-group">
-                            <label for="status" class="pb-1 pt-3">Status Pembayaran</label>
-                            <select class="form-control form-input" name="status" id="status">
-                                <option selected disabled>Pilih Status Pembayaran</option>
-                                <option value="0">Gagal</option>
-                                <option value="1">Menunggu</option>
-                                <option value="2">Diterima</option>
-                            </select>
+    {% if data.penerima %}
+        {% for penerima in data.penerima %}
+            <!-- Modal Detail Pembayaran -->
+            <div class="modal fade" id="editPenerima{{ penerima.penerima_id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                aria-labelledby="editPenerimaLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content mx-auto" style="background-color: #F9F9FB; border-radius: 10px; max-width: 1000px;">
+                        <div class="modal-body px-5">
+                            <div class="d-flex justify-content-between">
+                                <h4 class="fw-bold">Edit Penerima Zakat</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="/operator/penerima/simpanPenerima" id="form-edit-data-penerima" method="POST">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="nama" class="pb-1 pt-3">Nama Lengkap</label>
+                                    <input type="text" class="form-control form-input" name="nama" id="nama"
+                                        placeholder="Masukkan nama lengkap" value="{{ penerima.nama }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email" class="pb-1 pt-3">Email</label>
+                                    <input type="text" class="form-control form-input" name="email" id="email"
+                                        placeholder="Masukkan email" value="{{ penerima.email }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="nohp" class="pb-1 pt-3">Nomor Telepon</label>
+                                    <input type="text" class="form-control form-input" name="nohp" id="nohp"
+                                        placeholder="Masukkan nomor telepon" value="{{ penerima.nomor_hp }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="nokk" class="pb-1 pt-3">Nomor Kartu Keluarga</label>
+                                    <input type="text" class="form-control form-input" name="nokk" id="nokk"
+                                        placeholder="Masukkan nomor kartu keluarga" value="{{ penerima.nomor_kk }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="alamat" class="pb-1 pt-3">Alamat</label>
+                                    <input type="text" class="form-control form-input" name="alamat" id="alamat"
+                                        placeholder="Masukkan alamat" value="{{ penerima.alamat }}">
+                                </div>
+                                <div class="pt-3 text-center pb-2">
+                                    <button type="button" class="btn btn-no me-3" data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-yes" form="form-edit-data-penerima">Simpan</button>
+                                </div>
+                            </form>
                         </div>
-                    </form>
-                    <div class="pt-3 text-center pb-2">
-                        <button type="button" class="btn btn-no me-3" data-bs-dismiss="modal">Batal</button>
-                        <a href="/ubahStatus"><button type="button" class="btn btn-yes">Simpan</button></a>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- Modal Detail Pembayaran -->
-    <div class="modal fade" id="editPenerima" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="editPenerimaLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content mx-auto"
-                style="background-color: #F9F9FB; border-radius: 10px; max-width: 1000px;">
-                <div class="modal-body px-5">
-                    <div class="d-flex justify-content-between">
-                        <h4 class="fw-bold">Edit Penerima Zakat</h4>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="form-group">
-                        <label for="nama" class="pb-1 pt-3">Nama Lengkap</label>
-                        <input type="text" class="form-control form-input" name="nama" id="nama" placeholder="Masukkan nama lengkap">
-                    </div>
-                    <div class="form-group">
-                        <label for="email" class="pb-1 pt-3">Email</label>
-                        <input type="text" class="form-control form-input" name="email" id="email" placeholder="Masukkan email">
-                    </div>
-                    <div class="form-group">
-                        <label for="nohp" class="pb-1 pt-3">Nomor Telepon</label>
-                        <input type="text" class="form-control form-input" name="nohp" id="nohp" placeholder="Masukkan nomor telepon">
-                    </div>
-                    <div class="form-group">
-                        <label for="nokk" class="pb-1 pt-3">Nomor Kartu Keluarga</label>
-                        <input type="text" class="form-control form-input" name="nokk" id="nokk" placeholder="Masukkan nomor kartu keluarga">
-                    </div>
-                    <div class="form-group">
-                        <label for="alamat" class="pb-1 pt-3">Alamat</label>
-                        <input type="text" class="form-control form-input" name="alamat" id="alamat" placeholder="Masukkan alamat">
-                    </div>
-                    <div class="pt-3 text-center pb-2">
-                        <button type="button" class="btn btn-no me-3" data-bs-dismiss="modal">Batal</button>
-                        <a href="login"><button type="button" class="btn btn-yes">Simpan</button></a>
+            <!-- Modal Edit Status -->
+            <div class="modal fade" id="editStatus" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                aria-labelledby="editStatusLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content mx-auto"
+                        style="background-color: #F9F9FB; border-radius: 10px; max-width: 1000px;">
+                        <div class="modal-body px-3">
+                            <div class="d-flex justify-content-between">
+                                <h4 class="fw-bold">Edit Status Penyaluran</h4>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <form action="/operator/penerima/ubahstatus" id="form-edit-status" class="px-3" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="id" id="id" value="{{ penerima.penerima_id }}">
+                                <div class="form-group">
+                                    <label for="status" class="pb-1 pt-3">Status Penyaluran</label>
+                                    <select class="form-control form-input" name="status" id="status">
+                                        <option selected disabled>Pilih Status Penyaluran</option>
+                                        {% if penerima.status == 0 %}
+                                        <option value="0" selected>Gagal</option>
+                                        <option value="1">Menunggu</option>
+                                        <option value="2">Diterima</option>
+                                        {% elif penerima.status == 1 %}
+                                        <option value="0">Gagal</option>
+                                        <option value="1" selected>Menunggu</option>
+                                        <option value="2">Diterima</option>
+                                        {% elif penerima.status == 2 %}
+                                        <option value="0">Gagal</option>
+                                        <option value="1">Menunggu</option>
+                                        <option value="2" selected>Diterima</option>
+                                        {% else %}
+                                        <option value="0">Gagal</option>
+                                        <option value="1">Menunggu</option>
+                                        <option value="2">Diterima</option>
+                                        {% endif %}
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        {% endfor %}
+    {% endif %}
 
     <!-- Modal Add Penerima Zakat -->
     <div class="modal fade" id="modalAdd" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -149,35 +187,38 @@
                         <h4 class="fw-bold">Tambah Penerima Zakat</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="form-group">
-                        <label for="nama" class="pb-1 pt-3">Nama Lengkap</label>
-                        <input type="text" class="form-control form-input" name="nama" id="nama"
-                            placeholder="Masukkan nama lengkap">
-                    </div>
-                    <div class="form-group">
-                        <label for="email" class="pb-1 pt-3">Email</label>
-                        <input type="text" class="form-control form-input" name="email" id="email"
-                            placeholder="Masukkan email">
-                    </div>
-                    <div class="form-group">
-                        <label for="nohp" class="pb-1 pt-3">Nomor Telepon</label>
-                        <input type="text" class="form-control form-input" name="nohp" id="nohp"
-                            placeholder="Masukkan nomor telepon">
-                    </div>
-                    <div class="form-group">
-                        <label for="nokk" class="pb-1 pt-3">Nomor Kartu Keluarga</label>
-                        <input type="text" class="form-control form-input" name="nokk" id="nokk"
-                            placeholder="Masukkan nomor kartu keluarga">
-                    </div>
-                    <div class="form-group">
-                        <label for="alamat" class="pb-1 pt-3">Alamat</label>
-                        <input type="text" class="form-control form-input" name="alamat" id="alamat"
-                            placeholder="Masukkan alamat">
-                    </div>
-                    <div class="pt-3 text-center pb-2">
-                        <button type="button" class="btn btn-no me-3" data-bs-dismiss="modal">Batal</button>
-                        <a href=""><button type="button" class="btn btn-yes">Simpan</button></a>
-                    </div>
+                    <form action="/operator/penerima/simpanPenerima" id="form-tambah-penerima" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="nama" class="pb-1 pt-3">Nama Lengkap</label>
+                            <input type="text" class="form-control form-input" name="nama" id="nama"
+                                placeholder="Masukkan nama lengkap">
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="pb-1 pt-3">Email</label>
+                            <input type="text" class="form-control form-input" name="email" id="email"
+                                placeholder="Masukkan email">
+                        </div>
+                        <div class="form-group">
+                            <label for="nohp" class="pb-1 pt-3">Nomor Telepon</label>
+                            <input type="text" class="form-control form-input" name="nohp" id="nohp"
+                                placeholder="Masukkan nomor telepon">
+                        </div>
+                        <div class="form-group">
+                            <label for="nokk" class="pb-1 pt-3">Nomor Kartu Keluarga</label>
+                            <input type="text" class="form-control form-input" name="nokk" id="nokk"
+                                placeholder="Masukkan nomor kartu keluarga">
+                        </div>
+                        <div class="form-group">
+                            <label for="alamat" class="pb-1 pt-3">Alamat</label>
+                            <input type="text" class="form-control form-input" name="alamat" id="alamat"
+                                placeholder="Masukkan alamat">
+                        </div>
+                        <div class="pt-3 text-center pb-2">
+                            <button type="button" class="btn btn-no me-3" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-yes" form="form-tambah-penerima">Simpan</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>

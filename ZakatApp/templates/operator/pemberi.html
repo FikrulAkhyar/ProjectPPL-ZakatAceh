@@ -20,9 +20,9 @@
                 </div>
             </div>
 
-            <table class="mt-5" style="width: 100%;">
+            <table class="table mt-5" style="width: 100%;">
                 <tr>
-                    <th width="50%">Pemberi Zakat</th>
+                    <th width="50%" class="ps-3">Pemberi Zakat</th>
                     <th class="text-center">Status</th>
                 </tr>
                 {% if data.pembayaran %}
@@ -33,7 +33,7 @@
                                     <p class="text-start">{{ pembayaran.username }} <br> {{ pembayaran.nomor_kk }}</p>
                                 </button>
                             </td>
-                            <td>
+                            <td class="text-center">
                                 {% if pembayaran.status == 1 %}
                                     <button class="btn status-waiting text-center" data-bs-toggle="modal" data-bs-target="#editStatus{{ pembayaran.pembayaran_id }}">Menunggu</button>
                                 {% elif pembayaran.status == 2 %}

@@ -21,9 +21,9 @@
                 </div>
             </div>
 
-            <table class="mt-5" style="width: 100%;">
+            <table class="table mt-5" style="width: 100%;">
                 <tr>
-                    <th width="50%">Penerima Zakat</th>
+                    <th width="50%" class="ps-3">Penerima Zakat</th>
                     <th class="text-center">Status</th>
                 </tr>
                 {% if data.penerima %}
@@ -31,18 +31,18 @@
                     <tr>
                         <td>
                             <button class="btn" data-bs-toggle="modal" data-bs-target="#editPenerima{{ penerima.penerima_id }}">
-                                <p class="text-start">{{ penerima.nama }} <br> {{ penerima.nomor_kk }}</p>
+                                <div class="text-start">{{ penerima.nama }} <br> {{ penerima.nomor_kk }}</div>
                             </button>
                         </td>
-                        <td>
+                        <td class="text-center">
                             {% if penerima.status == 1 %}
-                                <button class="btn status-waiting text-center" data-bs-toggle="modal"
+                                <button class="btn status-waiting text-center mt-2" data-bs-toggle="modal"
                                     data-bs-target="#editStatus{{ penerima.penerima_id }}">Menunggu</button>
                             {% elif penerima.status == 2 %}
-                                <button class="btn status-success text-center" data-bs-toggle="modal"
-                                    data-bs-target="#editStatus{{ penerima.penerima_id }}">Berhasil</button>
+                                <button class="btn status-success text-center mt-2" data-bs-toggle="modal"
+                                    data-bs-target="#editStatus{{ penerima.penerima_id }}">Diterima</button>
                             {% else %}
-                                <button class="btn status-error text-center" data-bs-toggle="modal"
+                                <button class="btn status-error text-center mt-2" data-bs-toggle="modal"
                                     data-bs-target="#editStatus{{ penerima.penerima_id }}">Error</button>
                             {% endif %}
                         </td>
@@ -61,19 +61,19 @@
             <div class="mx-auto footer">
                 <div class="d-flex justify-content-between pt-2 px-5">
                     <div class="text-center px-3">
-                        <a href="/operator/pemberi" class="linkmenu">
+                        <a href="pemberi" class="linkmenu">
                             <i class="fad fa-hand-holding-usd fa-2x"></i>
                             <br>Pemberi
                         </a>
                     </div>
                     <div class="text-center px-3">
-                        <a href="/operator/home" class="linkmenu" id="beranda">
+                        <a href="home" class="linkmenu" id="beranda">
                             <i class="fad fa-home fa-2x"></i>
                             <br>Beranda
                         </a>
                     </div>
                     <div class="text-center px-3">
-                        <a href="/operator/penerima" class="linkmenu active">
+                        <a href="penerima" class="linkmenu active">
                             <i class="fad fa-handshake fa-2x"></i>
                             <br>Penerima
                         </a>
@@ -85,7 +85,7 @@
 
     {% if data.penerima %}
         {% for penerima in data.penerima %}
-            <!-- Modal Detail Pembayaran -->
+            <!-- Modal Ubah Penerima -->
             <div class="modal fade" id="editPenerima{{ penerima.penerima_id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
                 aria-labelledby="editPenerimaLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
@@ -95,8 +95,11 @@
                                 <h4 class="fw-bold">Edit Penerima Zakat</h4>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
-                            <form action="/operator/penerima/simpanPenerima" id="form-edit-data-penerima" method="POST">
+                            <form action="/operator/penerima" method="POST">
                                 {% csrf_token %}
+                                <input type="hidden" name="action" value="ubahPenerima">
+                                <input type="hidden" name="penerima_id" value="{{ penerima.penerima_id }}">
+                                <input type="hidden" name="jadwal_id" value="{{ penerima.jadwal_id_id }}">
                                 <div class="form-group">
                                     <label for="nama" class="pb-1 pt-3">Nama Lengkap</label>
                                     <input type="text" class="form-control form-input" name="nama" id="nama"
@@ -124,7 +127,7 @@
                                 </div>
                                 <div class="pt-3 text-center pb-2">
                                     <button type="button" class="btn btn-no me-3" data-bs-dismiss="modal">Batal</button>
-                                    <button type="submit" class="btn btn-yes" form="form-edit-data-penerima">Simpan</button>
+                                    <button type="submit" class="btn btn-yes">Simpan</button></a>
                                 </div>
                             </form>
                         </div>
@@ -133,7 +136,7 @@
             </div>
 
             <!-- Modal Edit Status -->
-            <div class="modal fade" id="editStatus" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            <div class="modal fade" id="editStatus{{ penerima.penerima_id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
                 aria-labelledby="editStatusLabel" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content mx-auto"
@@ -145,6 +148,7 @@
                             </div>
                             <form action="/operator/penerima/ubahstatus" id="form-edit-status" class="px-3" method="POST">
                                 {% csrf_token %}
+                                <input type="hidden" name="action" value="ubahStatus">
                                 <input type="hidden" name="id" id="id" value="{{ penerima.penerima_id }}">
                                 <div class="form-group">
                                     <label for="status" class="pb-1 pt-3">Status Penyaluran</label>
@@ -169,6 +173,10 @@
                                         {% endif %}
                                     </select>
                                 </div>
+                                <div class="pt-3 text-center pb-2">
+                                    <button type="button" class="btn btn-no me-3" data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-yes">Simpan</button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -177,7 +185,7 @@
         {% endfor %}
     {% endif %}
 
-    <!-- Modal Add Penerima Zakat -->
+    <!-- Modal Tambah Penerima Zakat -->
     <div class="modal fade" id="modalAdd" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="modalAddLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -187,8 +195,9 @@
                         <h4 class="fw-bold">Tambah Penerima Zakat</h4>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="/operator/penerima/simpanPenerima" id="form-tambah-penerima" method="POST">
+                    <form action="/operator/penerima/simpanpenerima" method="POST">
                         {% csrf_token %}
+                        <input type="hidden" name="action" value="tambahPenerima">
                         <div class="form-group">
                             <label for="nama" class="pb-1 pt-3">Nama Lengkap</label>
                             <input type="text" class="form-control form-input" name="nama" id="nama"
@@ -216,7 +225,7 @@
                         </div>
                         <div class="pt-3 text-center pb-2">
                             <button type="button" class="btn btn-no me-3" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-yes" form="form-tambah-penerima">Simpan</button>
+                            <button type="submit" class="btn btn-yes">Simpan</button>
                         </div>
                     </form>
                 </div>

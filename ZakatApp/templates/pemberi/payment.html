@@ -96,7 +96,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script>
-        var hargaberas = 14000;
+        var hargaberas = '{{ harga_beras }}';
         $('#jumlah').on('input', () => {
             var jumlah = $('#jumlah').val()
             var totalzakat = 2.5 * hargaberas * jumlah

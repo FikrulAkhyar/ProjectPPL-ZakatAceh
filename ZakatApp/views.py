@@ -11,7 +11,6 @@ from ZakatApp.models import Pengguna, Penerima, Jadwal, Pembayaran
 from ZakatApp.serializers import PenggunaSerializers, PenerimaSerializers, JadwalSerializers, PembayaranSerializers
 
 
-
 @csrf_exempt
 def penggunaApi(request, id=0):
     if request.method == 'GET':
@@ -147,30 +146,30 @@ def signup(request):
             'nama': request.POST['nama'],
             'nomor_hp': request.POST['email'],
         }
-        
+
         password = request.POST['password']
         konfirmasi_password = request.POST['konfirmasi']
-        
-        if password != konfirmasi_password :
+
+        if password != konfirmasi_password:
             messages.error(request, "Konfirmasi password tidak cocok!")
             return redirect('/signup')
-        
-        try :
-            pemberi = Pengguna.objects.get(username = pemberi_data['username'])
-        except :
+
+        try:
+            pemberi = Pengguna.objects.get(username=pemberi_data['username'])
+        except:
             messages.error(request, "Pengguna sudah ada!")
             return redirect('/signup')
-        
-        pemberi_serializer = PenggunaSerializers(data = pemberi_data)
-        
-        if pemberi_serializer.is_valid() :
+
+        pemberi_serializer = PenggunaSerializers(data=pemberi_data)
+
+        if pemberi_serializer.is_valid():
             pemberi_serializer.save()
             messages.success(request, "Pendaftaran berhasil!")
             return redirect('/login')
 
         messages.error(request, 'Gagal menambahkan pemberi baru!')
         return redirect('/login')
-    
+
         # Cara debugging tanpa tampilin halaman
         # return JsonResponse("Gagal menambahkan pemberi baru!", safe=False)
         # return JsonResponse(pemberi_data, safe=False)
@@ -182,24 +181,25 @@ def loginPengguna(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        
-        try :
-            pengguna = Pengguna.objects.get(username = username, password = password)
-        except Pengguna.DoesNotExist :
+
+        try:
+            pengguna = Pengguna.objects.get(
+                username=username, password=password)
+        except Pengguna.DoesNotExist:
             messages.error(request, 'Pengguna tidak ditemukan!')
             return redirect('/login')
-        
+
         request.session['pengguna_id'] = pengguna.pengguna_id
         request.session['peran_pengguna'] = pengguna.peran
         request.session['nominal'] = 0
-        
-        if pengguna.peran == 0 :
+
+        if pengguna.peran == 0:
             return redirect('/operator/home')
-        elif pengguna.peran == 1 :
+        elif pengguna.peran == 1:
             return redirect('/pemberi/home')
-        
-        
-def logoutPengguna(request) :
+
+
+def logoutPengguna(request):
     logout(request)
     return redirect('/login')
 
@@ -222,9 +222,10 @@ def homeOperator(request):
                 'hargaberas': jadwal.harga_beras,
                 'jumlahPemberi': jumlahPemberi,
                 'jumlahPenerima': jumlahPenerima,
-                'totalTabungan': totalTabungan
+                'totalTabungan': totalTabungan,
             }
             return render(request, 'operator/home.html', {'data': data})
+
     elif request.method == 'POST':
         jadwal_data = {
             "tanggal_mulai_pembayaran": request.POST['mulaibayar'],
@@ -248,9 +249,6 @@ def homeOperator(request):
 def pemberiOperator(request):
     jadwal = Jadwal.objects.order_by('-jadwal_id')[0]
     pembayaran = Pembayaran.objects.all()
-    for i in pembayaran:
-        pemberi = Pengguna.objects.filter(pengguna_id=i.pemberi_id)
-        i.update(pemberi)
 
     data = {
         'pembayaran': pembayaran,
@@ -261,14 +259,61 @@ def pemberiOperator(request):
 
 
 def penerimaOperator(request):
-    jadwal = Jadwal.objects.order_by('-jadwal_id')[0]
-    penerima = Penerima.objects.all()
-    data = {
-        'penerima': penerima,
-        'mulaipenyaluran': jadwal.tanggal_mulai_penyaluran.strftime("%d/%m/%Y"),
-        'akhirpenyaluran': jadwal.tanggal_akhir_penyaluran.strftime("%d/%m/%Y"),
-    }
-    return render(request, 'operator/penerima.html', {'data': data})
+    if request.method == 'GET':
+        jadwal = Jadwal.objects.order_by('-jadwal_id')[0]
+        penerima = Penerima.objects.all()
+        data = {
+            'penerima': penerima,
+            'mulaipenyaluran': jadwal.tanggal_mulai_penyaluran.strftime("%d/%m/%Y"),
+            'akhirpenyaluran': jadwal.tanggal_akhir_penyaluran.strftime("%d/%m/%Y"),
+        }
+        return render(request, 'operator/penerima.html', {'data': data})
+
+    if request.method == 'POST':
+        if request.POST['action'] == 'ubahStatus':
+            id = request.POST['id']
+            status = request.POST['status']
+            Penerima.objects.filter(penerima_id=id).update(status=status)
+            return redirect('/operator/penerima')
+
+        elif request.POST['action'] == 'tambahPenerima':
+            jadwal_id = Jadwal.objects.latest('jadwal_id').jadwal_id
+
+            penerima_data = {
+                'jadwal_id': jadwal_id,
+                'nama': request.POST['nama'],
+                'email': request.POST['email'],
+                'nomor_hp': request.POST['nohp'],
+                'nomor_kk': request.POST['nokk'],
+                'alamat': request.POST['alamat'],
+                'status': 1
+            }
+
+            penerima_serializer = PenerimaSerializers(data=penerima_data)
+            if penerima_serializer.is_valid():
+                penerima_serializer.save()
+                return redirect('/operator/penerima')
+
+        elif request.POST['action'] == 'ubahPenerima':
+            penerima_data = {
+                'penerima_id': request.POST['penerima_id'],
+                'jadwal_id': request.POST['jadwal_id'],
+                'nama': request.POST['nama'],
+                'email': request.POST['email'],
+                'nomor_hp': request.POST['nohp'],
+                'nomor_kk': request.POST['nokk'],
+                'alamat': request.POST['alamat'],
+                'status': 1
+            }
+
+            penerima = Penerima.objects.get(
+                penerima_id=penerima_data['penerima_id'])
+            penerima_serializer = PenerimaSerializers(
+                penerima, data=penerima_data)
+
+            if penerima_serializer.is_valid():
+                penerima_serializer.save()
+            return redirect('/operator/penerima')
 
 
 def ubahStatusPemberi(request):
@@ -277,128 +322,104 @@ def ubahStatusPemberi(request):
         status = request.POST['status']
         Pembayaran.objects.filter(pemberi_id=id).update(status=status)
         return redirect('/operator/pemberi')
-      
-
-def ubahStatusPenerima(request):
-    if request.method == 'POST':
-        id = request.POST['id']
-        status = request.POST['status']
-        Penerima.objects.filter(penerima_id=id).update(status=status)
-        return redirect('/operator/penerima')
-
-
-def simpanPenerima(request):
-    if request.method == 'POST':
-        jadwal_id = Jadwal.objects.latest('jadwal_id').jadwal_id
-        
-        penerima_data = {
-            'jadwal_id': jadwal_id,
-            'nama': request.POST['nama'],
-            'email': request.POST['email'],
-            'nomor_hp': request.POST['nohp'],
-            'nomor_kk': request.POST['nokk'],
-            'alamat': request.POST['alamat'],
-            'status': 1
-        }
-
-        penerima_serializer = PenerimaSerializers(data=penerima_data)
-        penerima_serializer.save()
-        return redirect('/operator/penerima')
 
 
 def homePemberi(request):
+    pengguna = Pengguna.objects.filter(
+        pengguna_id=request.session['pengguna_id'])[0]
     jadwal = Jadwal.objects.latest('jadwal_id')
     mulai_pembayaran = jadwal.tanggal_mulai_pembayaran.strftime("%d/%m/%Y")
     akhir_pembayaran = jadwal.tanggal_akhir_pembayaran.strftime("%d/%m/%Y")
     harga_beras = jadwal.harga_beras
-    
-    return render(request, 'pemberi/home.html', {'mulai_pembayaran' : mulai_pembayaran, 'akhir_pembayaran' : akhir_pembayaran, 'harga_beras': harga_beras})
- 
+
+    data = {
+        'pengguna': pengguna,
+        'jadwal': jadwal,
+        'mulai_pembayaran': mulai_pembayaran,
+        'akhir_pembayaran': akhir_pembayaran,
+        'harga_beras': harga_beras
+    }
+
+    return render(request, 'pemberi/home.html', {'data': data})
+
 
 def profilePemberi(request):
     pengguna_id = request.session['pengguna_id']
-    data = Pengguna.objects.filter(pengguna_id = pengguna_id)
-    return render(request, 'pemberi/profile.html', {'data' : data})
+    data = Pengguna.objects.filter(pengguna_id=pengguna_id)
+    return render(request, 'pemberi/profile.html', {'data': data})
 
 
 def ubahProfile(request):
-    if request.method == 'POST' :
+    if request.method == 'POST':
         email = request.POST['email']
         nohp = request.POST['nohp']
         nokk = request.POST['nokk']
         alamat = request.POST['alamat']
         pengguna_id = request.session['pengguna_id']
-        
-        Pengguna.objects.filter(pengguna_id = pengguna_id).update(email = email, nomor_hp = nohp, nomor_kk = nokk, alamat = alamat)
-        
+
+        Pengguna.objects.filter(pengguna_id=pengguna_id).update(
+            email=email, nomor_hp=nohp, nomor_kk=nokk, alamat=alamat)
+
         return redirect('/pemberi/profile')
 
 
 def historyPemberi(request):
-    del request.session['nominal']
-    
     pengguna_id = request.session['pengguna_id']
-    try :
-        data = Pembayaran.objects.filter(pemberi_id = pengguna_id)
-        
-        for d in data :
-            if d.status == 0 :
-                d.status = 'Gagal'
-            elif d.status == 1 :
-                d.status = 'Menunggu'
-            elif d.status == 2 :
-                d.status = 'Diterima'
+    try:
+        data = Pembayaran.objects.filter(pemberi_id=pengguna_id)
 
+        for d in data:
             d.tanggal = d.tanggal.strftime("%d / %m / %Y, %H:%M:%S")
-        
-        return render(request, 'pemberi/history.html', {'data' : data})
-    except :
+
+        return render(request, 'pemberi/history.html', {'data': data})
+    except:
         render(request, 'pemberi/history.html')
 
 
 def paymentPemberi(request):
-    if request.method == 'GET' :
-        return render(request, 'pemberi/payment.html')
-    elif request.method == 'POST' :
+    if request.method == 'GET':
+        harga_beras = Jadwal.objects.latest('jadwal_id').harga_beras
+        return render(request, 'pemberi/payment.html', {'harga_beras': harga_beras})
+    elif request.method == 'POST':
         jumlah_pemberi_zakat = request.POST['jumlah']
-        
-        if jumlah_pemberi_zakat == '' :
+
+        if jumlah_pemberi_zakat == '':
             messages.error(request, "Harap isi jumlah pemberi zakat!")
             return redirect('/pemberi/payment')
-        
+
         harga_beras = Jadwal.objects.latest('jadwal_id').harga_beras
-        
+
         nominal = int(2.5 * harga_beras * int(jumlah_pemberi_zakat))
-        
+
         request.session['nominal'] = nominal
-        
+
         return redirect('/pemberi/paymethod')
 
 
 def paymethodPemberi(request):
-    if request.method == 'GET' :
+    if request.method == 'GET':
         nominal = request.session['nominal']
-        
+
         return render(request, 'pemberi/paymethod.html', {'nominal': nominal})
-    elif request.method == 'POST' :
+    elif request.method == 'POST':
         pengguna_id = request.session['pengguna_id']
         jadwal_id = Jadwal.objects.latest('jadwal_id').jadwal_id
         nominal = request.POST['nominal']
         status = 1
         metode = request.POST['paymentmethod']
-        
+
         pemberi_data = {
             'pemberi_id': pengguna_id,
             'jadwal_id': jadwal_id,
             'nominal': nominal,
             'status': status
         }
-        
-        pembayaran_serializer = PembayaranSerializers(data = pemberi_data)
-        
-        if pembayaran_serializer.is_valid() :
+
+        pembayaran_serializer = PembayaranSerializers(data=pemberi_data)
+
+        if pembayaran_serializer.is_valid():
             pembayaran_serializer.save()
-        
+
             return render(request, 'pemberi/scanqr.html', {'metode': metode, 'nominal': nominal})
 
         messages.error(request, "Gagal melanjutkan pembayaran!")
@@ -406,14 +427,14 @@ def paymethodPemberi(request):
 
 
 def scanqrPemberi(request):
-    try :
+    try:
         pengguna_id = request.session['pengguna_id']
-        pembayaran = Pembayaran.objects.filter(pemberi_id = pengguna_id, jadwal_id = Jadwal.objects.latest('jadwal_id'))
-        
-        for p in pembayaran :
-            nominal = p.nominal
-        
-        return render(request, 'pemberi/scanqr.html', {'nominal' : nominal})
-    except :
-        return render(request, 'pemberi/scanqr.html', {'nominal' : 0})
+        pembayaran = Pembayaran.objects.filter(
+            pemberi_id=pengguna_id, jadwal_id=Jadwal.objects.latest('jadwal_id'))
 
+        for p in pembayaran:
+            nominal = p.nominal
+
+        return render(request, 'pemberi/scanqr.html', {'nominal': nominal})
+    except:
+        return render(request, 'pemberi/scanqr.html', {'nominal': 0})

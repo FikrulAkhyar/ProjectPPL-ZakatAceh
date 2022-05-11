@@ -16,22 +16,30 @@
         <div class="mx-auto content">
             <div class="pt-5 px-5">
                 <div class="pb-2">Jadwal Pembayaran Zakat</div>
-                <div class="text-center jadwal fw-bold">{{ mulai_pembayaran }} - {{ akhir_pembayaran }}</div>
+                <div class="text-center jadwal fw-bold">{{ data.mulai_pembayaran }} - {{ data.akhir_pembayaran }}</div>
             </div>
             
             <div class="pt-5 px-5">
                 <div class="px-3 keterangan fw-bold">
                     <div class="pt-3">Harga Beras</div>
                     <h3 class="py-3 fw-bold d-flex justify-content-between">
-                        <p class="pt-4">Rp. {{ harga_beras }}</p>
+                        <p class="pt-4">Rp. {{ data.harga_beras }}</p>
                         <img src="{% static 'img/rice.png' %}" alt="beras" width="100">
                     </h3>
                 </div>
             </div>
 
             <div class="pt-5 px-5">
+                {% if data.pengguna.nomor_kk != null or data.pengguna.alamat != null %}
                 <a href="payment"><button class="btn btn-orange">Mulai</button></a>
+                {% else %}
+                <div class="fw-bold text-center px-3">
+                    <i class="fas fa-exclamation-circle fa-2x pt-3"></i>
+                    <p class="pb-3">Harap lengkapi data anda sebelum melakukan pembayaran zakat</p>
+                </div>
+                {% endif %}
             </div>
+
         </div>
 
         <div class="fixed-bottom">

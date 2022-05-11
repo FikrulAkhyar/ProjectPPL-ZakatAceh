@@ -24,9 +24,6 @@
                 <img class="rounded-circle mb-2" src="{% static 'img/profile.png' %}" alt="Foto Profil" width="100">
                 <p>{{ d.username }}<br> <span class="fw-bold">{{ d.nama }}</span></p>
             </div>
-            <div class="d-flex justify-content-end me-5">
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#ubahProfile" data-toggle="tooltip" data-placement="top" title="Edit Profile">Ubah data</button>
-            </div>
             <div class="data px-5">
                 <table>
                     <tr>
@@ -63,7 +60,8 @@
                     </tr>
                 </table>
                 {% endfor %}
-                
+                <button class="btn btn-orange" data-bs-toggle="modal" data-bs-target="#ubahProfile" data-toggle="tooltip"
+                    data-placement="top" title="Edit Profile">Ubah data</button>
             </div>
         </div>
 

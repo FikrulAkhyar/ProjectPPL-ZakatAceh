@@ -47,7 +47,7 @@
             <div class="pt-5 px-5">
                 <div class="d-flex justify-content-between">
                     <p>Total Zakat</p>
-                    <p class="fw-bold">Rp. {{ nominal }}</p>
+                    <p class="fw-bold" id="rupiah">{{ nominal }}</p>
                 </div>
                 <button type="submit" class="btn btn-orange" form="form-bayar">Bayar Sekarang</button>
             </div>
@@ -95,4 +95,17 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script>
+        $(document).ready(function () {
+            var bilangan = $('#rupiah').text()
+            var reverse = bilangan.toString().split('').reverse().join(''), ribuan = reverse.match(/\d{1,3}/g);
+            ribuan = ribuan.join('.').split('').reverse().join('');
+            console.log(ribuan)
+            $("#rupiah").text(`Rp. ${ribuan}`);
+        })
+    </script>
 {% endblock %}

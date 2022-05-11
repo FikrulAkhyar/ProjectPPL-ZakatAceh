@@ -1,4 +1,3 @@
-from email import message
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
@@ -6,8 +5,6 @@ from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.core.files.storage import default_storage
 from django.contrib.auth import logout
-import datetime
-# from django.contrib.auth.decorators import login_required
 
 from ZakatApp.models import Pengguna, Penerima, Jadwal, Pembayaran
 from ZakatApp.serializers import PenggunaSerializers, PenerimaSerializers, JadwalSerializers, PembayaranSerializers
@@ -139,15 +136,8 @@ def saveFile(request):
 
 def signup(request):
     if request.method == 'GET':
-        # if request.user.is_authenticated :
-        #     return redirect('pemberi/home.html')
-        # else :
-        #     return render(request, 'signup.html')
         return render(request, 'signup.html')
     elif request.method == 'POST':
-        # if request.user.is_authenticated :
-        #     return redirect('pemberi/home.html')
-        # else :
         pemberi_data = {
             'peran': 1,
             'username': request.POST['username'],
@@ -157,7 +147,6 @@ def signup(request):
             'nomor_hp': request.POST['email'],
         }
         
-        # Cek kesamaan password dengan konfirmasi password
         password = request.POST['password']
         konfirmasi_password = request.POST['konfirmasi']
         
@@ -165,8 +154,6 @@ def signup(request):
             messages.error(request, "Konfirmasi password tidak cocok!")
             return redirect('/signup')
         
-        # Cek pengguna trsbt dh ada apa blm di database
-        # Kita cuma cek username nya aja krn cara kita login cuma ambil satu data dr database yg sesuai dgn username yg diinput untuk disamakan dgn password yg diinput
         try :
             pemberi = Pengguna.objects.get(username = pemberi_data['username'])
         except :
@@ -185,7 +172,10 @@ def signup(request):
 
         messages.error(request, 'Gagal menambahkan pemberi baru!')
         return redirect('/login')
+    
+        # Cara debugging tanpa tampilin halaman
         # return JsonResponse("Gagal menambahkan pemberi baru!", safe=False)
+        # return JsonResponse(pemberi_data, safe=False)
 
 
 def loginPengguna(request):
@@ -200,7 +190,6 @@ def loginPengguna(request):
         except Pengguna.DoesNotExist :
             messages.error(request, 'Pengguna tidak ditemukan!')
             return redirect('/login')
-            
         
         request.session['pengguna_id'] = pengguna.pengguna_id
         request.session['peran_pengguna'] = pengguna.peran
@@ -216,7 +205,6 @@ def logoutPengguna(request) :
     return redirect('/login')
 
 
-# @login_required(login_url='login')
 def homeOperator(request):
     if request.method == 'GET':
         return render(request, 'operator/home.html')
@@ -238,7 +226,6 @@ def homeOperator(request):
         
         messages.error(request, "Gagal menambahkan jadwal!")
         return redirect('/operator/home')
-        # return JsonResponse("Gagal menambahkan jadwal!", safe=False)
 
 
 def pemberiOperator(request):
@@ -249,6 +236,7 @@ def pemberiOperator(request):
 def penerimaOperator(request):
     return render(request, 'operator/penerima.html')
 
+
 def ubahStatusPemberi(request) :
     if request.method == 'POST' :
         id = request.POST['id']
@@ -256,9 +244,6 @@ def ubahStatusPemberi(request) :
         
         Pembayaran.objects.filter(pemberi_id = id).update(status = status)
         
-        # pemberi = Pembayaran.objects.get(pemberi_id = id)
-        # pemberi.status = status
-        # pemberi.save()
 
 def ubahStatusPenerima(request) :
     if request.method == 'POST' :
@@ -275,13 +260,13 @@ def homePemberi(request):
     harga_beras = jadwal.harga_beras
     
     return render(request, 'pemberi/home.html', {'mulai_pembayaran' : mulai_pembayaran, 'akhir_pembayaran' : akhir_pembayaran, 'harga_beras': harga_beras})
-    # return render(request, 'pemberi/home.html', {'data' : nominal})
  
 
 def profilePemberi(request):
     pengguna_id = request.session['pengguna_id']
     data = Pengguna.objects.filter(pengguna_id = pengguna_id)
     return render(request, 'pemberi/profile.html', {'data' : data})
+
 
 def ubahProfile(request):
     if request.method == 'POST' :
@@ -290,6 +275,7 @@ def ubahProfile(request):
         nokk = request.POST['nokk']
         alamat = request.POST['alamat']
         pengguna_id = request.session['pengguna_id']
+        
         Pengguna.objects.filter(pengguna_id = pengguna_id).update(email = email, nomor_hp = nohp, nomor_kk = nokk, alamat = alamat)
         
         return redirect('/pemberi/profile')
@@ -297,6 +283,7 @@ def ubahProfile(request):
 
 def historyPemberi(request):
     del request.session['nominal']
+    
     pengguna_id = request.session['pengguna_id']
     try :
         data = Pembayaran.objects.filter(pemberi_id = pengguna_id)
@@ -309,7 +296,6 @@ def historyPemberi(request):
             elif d.status == 2 :
                 d.status = 'Diterima'
 
-            # Ubah format tanggal
             d.tanggal = d.tanggal.strftime("%d - %m - %Y, %H:%M:%S")
         
         return render(request, 'pemberi/history.html', {'data' : data})
@@ -360,7 +346,8 @@ def paymethodPemberi(request):
         
             return render(request, 'pemberi/scanqr.html', {'metode': metode, 'nominal': nominal})
 
-        return JsonResponse(pemberi_data, safe=False)
+        messages.error(request, "Gagal melanjutkan pembayaran!")
+        return redirect('/pemberi/paymethod')
 
 
 def scanqrPemberi(request):

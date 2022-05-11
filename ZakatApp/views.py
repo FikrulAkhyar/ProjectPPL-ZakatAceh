@@ -270,10 +270,11 @@ def ubahStatusPenerima(request) :
 
 def homePemberi(request):
     jadwal = Jadwal.objects.latest('jadwal_id')
-    mulai_pembayaran = jadwal.tanggal_mulai_pembayaran
-    akhir_pembayaran = jadwal.tanggal_akhir_pembayaran
+    mulai_pembayaran = jadwal.tanggal_mulai_pembayaran.strftime("%d/%m/%Y")
+    akhir_pembayaran = jadwal.tanggal_akhir_pembayaran.strftime("%d/%m/%Y")
+    harga_beras = jadwal.harga_beras
     
-    return render(request, 'pemberi/home.html', {'mulai_pembayaran' : mulai_pembayaran, 'akhir_pembayaran' : akhir_pembayaran})
+    return render(request, 'pemberi/home.html', {'mulai_pembayaran' : mulai_pembayaran, 'akhir_pembayaran' : akhir_pembayaran, 'harga_beras': harga_beras})
     # return render(request, 'pemberi/home.html', {'data' : nominal})
  
 
@@ -295,6 +296,7 @@ def ubahProfile(request):
 
 
 def historyPemberi(request):
+    del request.session['nominal']
     pengguna_id = request.session['pengguna_id']
     try :
         data = Pembayaran.objects.filter(pemberi_id = pengguna_id)
@@ -306,6 +308,9 @@ def historyPemberi(request):
                 d.status = 'Menunggu'
             elif d.status == 2 :
                 d.status = 'Diterima'
+
+            # Ubah format tanggal
+            d.tanggal = d.tanggal.strftime("%d - %m - %Y, %H:%M:%S")
         
         return render(request, 'pemberi/history.html', {'data' : data})
     except :
@@ -324,22 +329,22 @@ def paymentPemberi(request):
         
         nominal = int(2.5 * 14000 * int(jumlah_pemberi_zakat))
         
-        return render(request, 'pemberi/paymethod.html', {'nominal': nominal})
+        request.session['nominal'] = nominal
+        
+        return redirect('/pemberi/paymethod')
 
 
 def paymethodPemberi(request):
     if request.method == 'GET' :
-        # pengguna_id = request.session['pengguna_id']
-        # data = Pembayaran.objects.get(pemberi_id = pengguna_id)
-        # nominal = data.nominal
+        nominal = request.session['nominal']
         
-        # return render(request, 'pemberi/paymethod.html', {'nominal' : nominal})
-        return render(request, 'pemberi/paymethod.html', {'nominal' : nominal})
+        return render(request, 'pemberi/paymethod.html', {'nominal': nominal})
     elif request.method == 'POST' :
         pengguna_id = request.session['pengguna_id']
         jadwal_id = Jadwal.objects.latest('jadwal_id').jadwal_id
         nominal = request.POST['nominal']
         status = 1
+        metode = request.POST['paymentmethod']
         
         pemberi_data = {
             'pemberi_id': pengguna_id,
@@ -353,7 +358,7 @@ def paymethodPemberi(request):
         if pembayaran_serializer.is_valid() :
             pembayaran_serializer.save()
         
-            return redirect('/pemberi/scanqr')
+            return render(request, 'pemberi/scanqr.html', {'metode': metode, 'nominal': nominal})
 
         return JsonResponse(pemberi_data, safe=False)
 

@@ -19,24 +19,28 @@
             <div class="pt-4 px-5">
                 <div class="pb-2">Pilih Metode Pembayaran</div>
                 <table class="px-3">
-                    <tr>
-                        <td width="100%">
-                            <img src="{% static 'img/dana-logo.png' %}" alt="Logo DANA" width="30">
-                            <label class="form-check-label" for="dana">DANA</label>
-                        </td>
-                        <td>
-                            <input class="form-check-input" type="radio" name="paymentmethod" id="dana" checked>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <img src="{% static 'img/ovo-logo.png' %}" alt="Logo OVO" width="30">
-                            <label class="form-check-label" for="ovo">OVO</label>
-                        </td>
-                        <td>
-                            <input class="form-check-input" type="radio" name="paymentmethod" id="ovo">
-                        </td>
-                    </tr>
+                    <form action="/pemberi/paymethod" id="form-bayar" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="nominal" id="nominal" value={{ nominal }}>
+                        <tr>
+                            <td width="100%">
+                                <img src="{% static 'img/dana-logo.png' %}" alt="Logo DANA" width="30">
+                                <label class="form-check-label" for="dana">DANA</label>
+                            </td>
+                            <td>
+                                <input class="form-check-input" type="radio" name="paymentmethod" id="dana" value="dana" checked>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <img src="{% static 'img/ovo-logo.png' %}" alt="Logo OVO" width="30">
+                                <label class="form-check-label" for="ovo">OVO</label>
+                            </td>
+                            <td>
+                                <input class="form-check-input" type="radio" name="paymentmethod" id="ovo" value="ovo">
+                            </td>
+                        </tr>
+                    </form>
                 </table>
             </div>
 
@@ -45,10 +49,6 @@
                     <p>Total Zakat</p>
                     <p class="fw-bold">Rp. {{ nominal }}</p>
                 </div>
-                <form action="/pemberi/paymethod" id="form-bayar" method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="nominal" id="nominal" value={{ nominal }}>
-                </form>
                 <button type="submit" class="btn btn-orange" form="form-bayar">Bayar Sekarang</button>
             </div>
 

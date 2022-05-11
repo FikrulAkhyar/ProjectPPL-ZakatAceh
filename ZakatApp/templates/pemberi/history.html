@@ -13,7 +13,7 @@
     </div>
     <div class="container">
         <div class="mx-auto content px-5 pt-5">
-            <table>
+            <table style="width: 100%">
                 <tr>
                     <th width="85%">Pembayaran Zakat</th>
                     <th class="text-center">Status</th>
@@ -22,8 +22,9 @@
                 {% for d in data %}
                 <tr>
                     <td>
-                        {{ d.tanggal}}<br>
-                        {{ d.nominal }}
+                        <span class="fw-bold">{{ d.tanggal}}</span>
+                        <br>
+                        Rp. {{ d.nominal }}
                     </td>
                     <td>
                         <div class="status-waiting text-center">{{ d.status }}</div>

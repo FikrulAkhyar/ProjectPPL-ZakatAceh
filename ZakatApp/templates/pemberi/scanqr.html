@@ -17,7 +17,11 @@
                 <a href="paymethod"><button class="btn btn-back"><i class="fas fa-angle-left fa-2x"></i></button></a>
             </div>
             <div class="pt-4 px-5 text-center">
+                {% if metode == "dana" %}
                 <img src="{% static 'img/dana-qr.jpeg' %}" alt="QRCode Dana" height="250">
+                {% elif metode == "ovo" %}
+                <img src="{% static 'img/ovo-qr.jpeg' %}" alt="QRCode Ovo" height="250">
+                {% endif %}
             </div>
 
             <div class="pt-4 px-5">
@@ -25,7 +29,7 @@
                     <p>Total Zakat</p>
                     <p class="fw-bold">Rp. {{ nominal }}</p>
                 </div>
-                <a href="history"><button class="btn btn-orange">Sudah Bayar</button></a>
+                <a href="/pemberi/history"><button class="btn btn-orange">Sudah Bayar</button></a>
             </div>
 
             <div class="pt-4 px-5">

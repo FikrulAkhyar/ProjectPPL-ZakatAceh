@@ -248,14 +248,14 @@ def homeOperator(request):
 
 def pemberiOperator(request):
     jadwal = Jadwal.objects.order_by('-jadwal_id')[0]
-    pembayaran = Pembayaran.objects.all()
+    pembayaran = Pembayaran.objects.latest('pembayaran_id')
+    pemberi = Pengguna.objects.filter()[0]
 
-    data = {
-        'pembayaran': pembayaran,
+    jadwal = {
         'mulaipembayaran': jadwal.tanggal_mulai_pembayaran.strftime("%d/%m/%Y"),
         'akhirpembayaran': jadwal.tanggal_akhir_penyaluran.strftime("%d/%m/%Y"),
     }
-    return render(request, 'operator/pemberi.html', {'data': data})
+    return render(request, 'operator/pemberi.html', {'jadwal': jadwal, 'pemberi': pemberi, 'pembayaran': pembayaran})
 
 
 def penerimaOperator(request):
@@ -320,7 +320,9 @@ def ubahStatusPemberi(request):
     if request.method == 'POST':
         id = request.POST['id']
         status = request.POST['status']
-        Pembayaran.objects.filter(pemberi_id=id).update(status=status)
+        return JsonResponse(id, safe=False)
+        
+        Pembayaran.objects.filter(pembayaran_id=id).update(status=status)
         return redirect('/operator/pemberi')
 
 

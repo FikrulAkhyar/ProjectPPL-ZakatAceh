@@ -36,7 +36,7 @@ class Jadwal(models.Model):
 
 class Penerima(models.Model):
     penerima_id = models.AutoField(primary_key=True)
-    jadwal_id = models.ForeignKey(Jadwal, on_delete=models.CASCADE)
+    jadwal = models.ForeignKey(Jadwal, on_delete=models.CASCADE)
     nama = models.CharField(max_length=500)
     email = models.EmailField(max_length=254)
     nomor_hp = models.CharField(max_length=500)
@@ -47,8 +47,8 @@ class Penerima(models.Model):
 
 class Pembayaran(models.Model):
     pembayaran_id = models.AutoField(primary_key=True)
-    pemberi_id = models.ForeignKey(Pengguna, on_delete=models.CASCADE)
-    jadwal_id = models.ForeignKey(Jadwal, on_delete=models.DO_NOTHING)
+    pemberi = models.ForeignKey(Pengguna, on_delete=models.CASCADE)
+    jadwal = models.ForeignKey(Jadwal, on_delete=models.DO_NOTHING)
     tanggal = models.DateTimeField(auto_now_add=True)
     nominal = models.IntegerField()
     status = models.IntegerField(choices=Status.choices)

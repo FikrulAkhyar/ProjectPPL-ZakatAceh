@@ -135,8 +135,9 @@
                             <h4 class="fw-bold">Edit Status Pembayaran</h4>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <form action="/operator/pemberi/ubahStatus" id="form-edit-status" class="px-3" method="POST">
+                        <form action="/operator/pemberi" id="form-edit-status" class="px-3" method="POST">
                             {% csrf_token %}
+                            <input type="hidden" name="action" value="ubahStatus">
                             <input type="hidden" name="id" id="id" value="{{ pembayaran.pembayaran_id }}">
                             <div class="form-group">
                                 <label for="status" class="pb-1 pt-3">Status Pembayaran</label>

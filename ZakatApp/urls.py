@@ -26,7 +26,6 @@ urlpatterns = [
 
     re_path(r'^operator/home', views.homeOperator),
     re_path(r'^operator/pemberi', views.pemberiOperator),
-    re_path(r'^operator/pemberi/ubahStatus', views.ubahStatusPemberi),
     re_path(r'^operator/penerima', views.penerimaOperator),
 
     re_path(r'^pemberi/home', views.homePemberi),

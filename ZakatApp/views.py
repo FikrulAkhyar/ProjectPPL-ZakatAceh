@@ -247,15 +247,22 @@ def homeOperator(request):
 
 
 def pemberiOperator(request):
-    jadwal = Jadwal.objects.order_by('-jadwal_id')[0]
-    pembayaran = Pembayaran.objects.latest('pembayaran_id')
-    pemberi = Pengguna.objects.filter()[0]
+    if request.method == 'GET' :
+        jadwal = Jadwal.objects.order_by('-jadwal_id')[0]
+        pembayaran = Pembayaran.objects.latest('pembayaran_id')
+        pemberi = Pengguna.objects.get(pengguna_id = pembayaran.pemberi_id)
 
-    jadwal = {
-        'mulaipembayaran': jadwal.tanggal_mulai_pembayaran.strftime("%d/%m/%Y"),
-        'akhirpembayaran': jadwal.tanggal_akhir_penyaluran.strftime("%d/%m/%Y"),
-    }
-    return render(request, 'operator/pemberi.html', {'jadwal': jadwal, 'pemberi': pemberi, 'pembayaran': pembayaran})
+        jadwal = {
+            'mulaipembayaran': jadwal.tanggal_mulai_pembayaran.strftime("%d/%m/%Y"),
+            'akhirpembayaran': jadwal.tanggal_akhir_penyaluran.strftime("%d/%m/%Y"),
+        }
+        return render(request, 'operator/pemberi.html', {'jadwal': jadwal, 'pemberi': pemberi, 'pembayaran': pembayaran})
+    elif request.method == 'POST':
+        if request.POST['action'] == 'ubahStatus':
+            id = request.POST['id']
+            status = request.POST['status']
+            Pembayaran.objects.filter(pembayaran_id=id).update(status=status)
+            return redirect('/operator/pemberi')
 
 
 def penerimaOperator(request):
@@ -314,16 +321,6 @@ def penerimaOperator(request):
             if penerima_serializer.is_valid():
                 penerima_serializer.save()
             return redirect('/operator/penerima')
-
-
-def ubahStatusPemberi(request):
-    if request.method == 'POST':
-        id = request.POST['id']
-        status = request.POST['status']
-        return JsonResponse(id, safe=False)
-        
-        Pembayaran.objects.filter(pembayaran_id=id).update(status=status)
-        return redirect('/operator/pemberi')
 
 
 def homePemberi(request):

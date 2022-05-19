@@ -26,5 +26,5 @@ class PenerimaSerializers(serializers.ModelSerializer):
 class PembayaranSerializers(serializers.ModelSerializer):
     class Meta:
         model = Pembayaran
-        fields = ('pembayaran_id', 'pemberi_id', 'jadwal_id',
+        fields = ('pembayaran_id', 'pemberi', 'jadwal',
                   'tanggal', 'nominal', 'status')

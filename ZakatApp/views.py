@@ -332,8 +332,7 @@ def penerimaOperator(request):
 
 
 def homePemberi(request):
-    pengguna = Pengguna.objects.filter(
-        pengguna_id=request.session['pengguna_id'])[0]
+    pengguna = Pengguna.objects.filter(pengguna_id=request.session['pengguna_id'])[0]
     jadwal = Jadwal.objects.latest('jadwal_id')
     mulai_pembayaran = jadwal.tanggal_mulai_pembayaran.strftime("%d/%m/%Y")
     akhir_pembayaran = jadwal.tanggal_akhir_pembayaran.strftime("%d/%m/%Y")
@@ -416,8 +415,8 @@ def paymethodPemberi(request):
         metode = request.POST['paymentmethod']
 
         pemberi_data = {
-            'pemberi_id': pengguna_id,
-            'jadwal_id': jadwal_id,
+            'pemberi': pengguna_id,
+            'jadwal': jadwal_id,
             'nominal': nominal,
             'status': status
         }

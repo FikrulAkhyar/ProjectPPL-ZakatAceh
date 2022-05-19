@@ -45,7 +45,7 @@
                             <i class="fad fa-money-bill fa-2x"></i>
                             <br>Tabungan<br>(Rupiah)
                             {% if data.totalTabungan.nominal__sum %}
-                            <p>Rp. {{data.totalTabungan.nominal__sum}}</p>
+                            <p id="rupiah">Rp. {{data.totalTabungan.nominal__sum}}</p>
                             {% else %}
                             <p>Rp. 0</p>
                             {% endif %}
@@ -182,6 +182,15 @@
         )
         }).trigger("change")
     
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            var bilangan = $('#rupiah').text()
+            var reverse = bilangan.toString().split('').reverse().join(''), ribuan = reverse.match(/\d{1,3}/g);
+            ribuan = ribuan.join('.').split('').reverse().join('');
+            $("#rupiah").text(`Rp. ${ribuan}`);
+        })
     </script>
 </body>
 

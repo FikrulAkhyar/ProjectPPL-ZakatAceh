@@ -84,7 +84,6 @@
             var bilangan = $('#rupiah').text()
             var reverse = bilangan.toString().split('').reverse().join(''), ribuan = reverse.match(/\d{1,3}/g);
             ribuan = ribuan.join('.').split('').reverse().join('');
-            console.log(ribuan)
             $("#rupiah").text(`Rp. ${ribuan}`);
         })
     </script>

@@ -156,9 +156,10 @@ def signup(request):
 
         try:
             pemberi = Pengguna.objects.get(username=pemberi_data['username'])
-        except:
             messages.error(request, "Pengguna sudah ada!")
             return redirect('/signup')
+        except:
+            pass
 
         pemberi_serializer = PenggunaSerializers(data=pemberi_data)
 
@@ -225,6 +226,8 @@ def homeOperator(request):
                 'totalTabungan': totalTabungan,
             }
             return render(request, 'operator/home.html', {'data': data})
+        else :
+            return JsonResponse("Harap isi collection Jadwal secara manual di backend API !", safe=False)
 
     elif request.method == 'POST':
         jadwal_data = {
@@ -249,14 +252,19 @@ def homeOperator(request):
 def pemberiOperator(request):
     if request.method == 'GET' :
         jadwal = Jadwal.objects.order_by('-jadwal_id')[0]
-        pembayaran = Pembayaran.objects.latest('pembayaran_id')
-        pemberi = Pengguna.objects.get(pengguna_id = pembayaran.pemberi_id)
-
         jadwal = {
             'mulaipembayaran': jadwal.tanggal_mulai_pembayaran.strftime("%d/%m/%Y"),
             'akhirpembayaran': jadwal.tanggal_akhir_penyaluran.strftime("%d/%m/%Y"),
         }
-        return render(request, 'operator/pemberi.html', {'jadwal': jadwal, 'pemberi': pemberi, 'pembayaran': pembayaran})
+        
+        try :
+            pembayaran = Pembayaran.objects.latest('pembayaran_id')
+            pemberi = Pengguna.objects.get(pengguna_id = pembayaran.pemberi_id)
+
+            return render(request, 'operator/pemberi.html', {'jadwal': jadwal, 'pemberi': pemberi, 'pembayaran': pembayaran})
+        except :
+            return render(request, 'operator/pemberi.html', {'jadwal': jadwal})
+            
     elif request.method == 'POST':
         if request.POST['action'] == 'ubahStatus':
             id = request.POST['id']

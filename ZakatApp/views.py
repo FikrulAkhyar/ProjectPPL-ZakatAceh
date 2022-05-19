@@ -184,8 +184,7 @@ def loginPengguna(request):
         password = request.POST['password']
 
         try:
-            pengguna = Pengguna.objects.get(
-                username=username, password=password)
+            pengguna = Pengguna.objects.get(username=username, password=password)
         except Pengguna.DoesNotExist:
             messages.error(request, 'Pengguna tidak ditemukan!')
             return redirect('/login')
@@ -211,8 +210,8 @@ def homeOperator(request):
             jadwal = Jadwal.objects.order_by('-jadwal_id')[0]
             jumlahPemberi = Pengguna.objects.filter(peran=1).count()
             jumlahPenerima = Penerima.objects.all().count()
-            totalTabungan = Pembayaran.objects.filter(
-                status=2).aggregate(Sum('nominal'))
+            totalTabungan = Pembayaran.objects.filter(status=2).aggregate(Sum('nominal'))
+            
             data = {
                 'mulaibayar': str(jadwal.tanggal_mulai_pembayaran)[:10],
                 'akhirbayar': str(jadwal.tanggal_akhir_pembayaran)[:10],
@@ -225,10 +224,11 @@ def homeOperator(request):
                 'jumlahPenerima': jumlahPenerima,
                 'totalTabungan': totalTabungan,
             }
+            
             return render(request, 'operator/home.html', {'data': data})
         else :
-            return JsonResponse("Harap isi collection Jadwal secara manual di backend API !", safe=False)
-
+            messages.error(request, "Harap isi jadwal pembayaran dan penyaluran zakat sekarang !")
+            return render(request, 'operator/home.html')
     elif request.method == 'POST':
         jadwal_data = {
             "tanggal_mulai_pembayaran": request.POST['mulaibayar'],
@@ -321,10 +321,8 @@ def penerimaOperator(request):
                 'status': 1
             }
 
-            penerima = Penerima.objects.get(
-                penerima_id=penerima_data['penerima_id'])
-            penerima_serializer = PenerimaSerializers(
-                penerima, data=penerima_data)
+            penerima = Penerima.objects.get(penerima_id=penerima_data['penerima_id'])
+            penerima_serializer = PenerimaSerializers(penerima, data=penerima_data)
 
             if penerima_serializer.is_valid():
                 penerima_serializer.save()
@@ -363,14 +361,14 @@ def ubahProfile(request):
         alamat = request.POST['alamat']
         pengguna_id = request.session['pengguna_id']
 
-        Pengguna.objects.filter(pengguna_id=pengguna_id).update(
-            email=email, nomor_hp=nohp, nomor_kk=nokk, alamat=alamat)
+        Pengguna.objects.filter(pengguna_id=pengguna_id).update(email=email, nomor_hp=nohp, nomor_kk=nokk, alamat=alamat)
 
         return redirect('/pemberi/profile')
 
 
 def historyPemberi(request):
     pengguna_id = request.session['pengguna_id']
+    
     try:
         data = Pembayaran.objects.filter(pemberi_id=pengguna_id)
 

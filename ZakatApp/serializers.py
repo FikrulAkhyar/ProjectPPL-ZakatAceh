@@ -27,4 +27,5 @@ class PembayaranSerializers(serializers.ModelSerializer):
     class Meta:
         model = Pembayaran
         fields = ('pembayaran_id', 'pemberi', 'jadwal',
+                  'email', 'nama', 'nomor_hp', 'nomor_kk', 'alamat', 'jumlah_anggota_keluarga',
                   'tanggal', 'nominal', 'status')

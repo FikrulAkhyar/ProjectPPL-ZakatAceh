@@ -26,22 +26,24 @@
                     <th class="text-center">Status</th>
                 </tr>
                 {% if pembayaran %}
+                {% for pemberi in pembayaran %}
                     <tr>
                         <td>
-                            <button class="btn" data-bs-toggle="modal" data-bs-target="#detailPemberi{{ pemberi.pengguna_id }}">
+                            <button class="btn" data-bs-toggle="modal" data-bs-target="#detailPemberi{{ pemberi.pemberi_id }}">
                                 <p class="text-start">{{ pemberi.nama }} <br> {{ pemberi.nomor_kk }}</p>
                             </button>
                         </td>
                         <td class="text-center">
-                            {% if pembayaran.status == 0 %}
-                                <button class="btn status-error text-center" data-bs-toggle="modal" data-bs-target="#editStatus{{ pembayaran.pembayaran_id }}">Gagal</button>
-                            {% elif pembayaran.status == 1 %}
-                                <button class="btn status-waiting text-center" data-bs-toggle="modal" data-bs-target="#editStatus{{ pembayaran.pembayaran_id }}">Menunggu</button>
-                            {% elif pembayaran.status == 2 %}
-                                <button class="btn status-success text-center" data-bs-toggle="modal" data-bs-target="#editStatus{{ pembayaran.pembayaran_id }}">Berhasil</button>
+                            {% if pemberi.status == 0 %}
+                                <button class="btn status-error text-center" data-bs-toggle="modal" data-bs-target="#editStatus{{ pemberi.pembayaran_id }}">Gagal</button>
+                            {% elif pemberi.status == 1 %}
+                                <button class="btn status-waiting text-center" data-bs-toggle="modal" data-bs-target="#editStatus{{ pemberi.pembayaran_id }}">Menunggu</button>
+                            {% elif pemberi.status == 2 %}
+                                <button class="btn status-success text-center" data-bs-toggle="modal" data-bs-target="#editStatus{{ pemberi.pembayaran_id }}">Berhasil</button>
                             {% endif %}
                         </td>
                     </tr>
+                {% endfor %}
                 {% else %}
                     <tr class="text-center pt-5">
                         <td colspan="2">Tidak ada Data</td>
@@ -76,102 +78,104 @@
         </div>
     </div>
 
-    {% if pembayaran %}
-        <!-- Modal Detail Pembayaran -->
-        <div class="modal fade" id="detailPemberi{{ pemberi.pengguna_id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-            aria-labelledby="detailPemberiLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content mx-auto" style="background-color: #F9F9FB; border-radius: 10px; max-width: 1000px;">
-                    <div class="modal-body">
-                        <div class="d-flex justify-content-between">
-                            <h4 class="fw-bold">Detail Pemberi Zakat</h4>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    {% for pemberi in pembayaran %}
+    <!-- Modal Detail Pembayaran -->
+    <div class="modal fade" id="detailPemberi{{ pemberi.pemberi_id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="detailPemberiLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content mx-auto" style="background-color: #F9F9FB; border-radius: 10px; max-width: 1000px;">
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between">
+                        <h4 class="fw-bold">Detail Pemberi Zakat</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <table>
+                        <tr>
+                            <td width="40%">Nama</td>
+                            <td>: {{ pemberi.nama }}</td>
+                        </tr>
+                        <tr>
+                            <td>Email</td>
+                            <td>: {{ pemberi.email }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nomor Telepon</td>
+                            <td>: {{ pemberi.nomor_hp }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nomor KK</td>
+                            <td>: {{ pemberi.nomor_kk }}</td>
+                        </tr>
+                        <tr>
+                            <td>Alamat</td>
+                            <td>: {{ pemberi.alamat }}</td>
+                        </tr>
+                        <tr>
+                            <td>Jumlah Anggota Keluarga</td>
+                            <td>: {{ pemberi.jumlah_anggota_keluarga }}</td>
+                        </tr>
+                        <tr>
+                            <td>Nominal Zakat</td>
+                            <td>: Rp. {{ pemberi.nominal }}</td>
+                        </tr>
+                    </table>
+                    <div class="pt-3 text-center pb-2">
+                        <button type="button" class="btn btn-no me-3" data-bs-dismiss="modal">Batal</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% for pemberi in pembayaran %}
+    <!-- Modal Edit Status -->
+    <div class="modal fade" id="editStatus{{ pemberi.pembayaran_id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="editStatusLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content mx-auto" style="background-color: #F9F9FB; border-radius: 10px; max-width: 1000px;">
+                <div class="modal-body">
+                    <div class="d-flex justify-content-between">
+                        <h4 class="fw-bold">Edit Status Pembayaran</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form action="/operator/pemberi" id="form-edit-status" class="px-3" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="ubahStatus">
+                        <input type="hidden" name="id" id="id" value="{{ pemberi.pembayaran_id }}">
+                        <div class="form-group">
+                            <label for="status" class="pb-1 pt-3">Status Pembayaran</label>
+                            <select class="form-control form-input" name="status" id="status">
+                                <option selected disabled>Pilih Status Pembayaran</option>
+                                {% if pemberi.status == 0 %}
+                                    <option value="0" selected>Gagal</option>
+                                    <option value="1">Menunggu</option>
+                                    <option value="2">Diterima</option>
+                                {% elif pemberi.status == 1 %}
+                                    <option value="0">Gagal</option>
+                                    <option value="1" selected>Menunggu</option>
+                                    <option value="2">Diterima</option>
+                                {% elif pemberi.status == 2 %}
+                                    <option value="0">Gagal</option>
+                                    <option value="1">Menunggu</option>
+                                    <option value="2" selected>Diterima</option>
+                                {% else %}
+                                    <option value="0">Gagal</option>
+                                    <option value="1">Menunggu</option>
+                                    <option value="2">Diterima</option>
+                                {% endif %}
+                            </select>
                         </div>
-                        <table>
-                            <tr>
-                                <td width="40%">Nama</td>
-                                <td>: {{ pemberi.nama }}</td>
-                            </tr>
-                            <tr>
-                                <td>Email</td>
-                                <td>: {{ pemberi.email }}</td>
-                            </tr>
-                            <tr>
-                                <td>Nomor Telepon</td>
-                                <td>: {{ pemberi.nomor_hp }}</td>
-                            </tr>
-                            <tr>
-                                <td>Nomor KK</td>
-                                <td>: {{ pemberi.nomor_kk }}</td>
-                            </tr>
-                            <tr>
-                                <td>Alamat</td>
-                                <td>: {{ pemberi.alamat }}</td>
-                            </tr>
-                            <tr>
-                                <td>Jumlah Anggota Keluarga</td>
-                                <td>: {{ pemberi.jumlah_anggota_keluarga }}</td>
-                            </tr>
-                            <tr>
-                                <td>Nominal Zakat</td>
-                                <td>: Rp. {{ pembayaran.nominal }}</td>
-                            </tr>
-                        </table>
                         <div class="pt-3 text-center pb-2">
                             <button type="button" class="btn btn-no me-3" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-yes">Simpan</button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
-
-        <!-- Modal Edit Status -->
-        <div class="modal fade" id="editStatus{{ pembayaran.pembayaran_id }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-            aria-labelledby="editStatusLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content mx-auto" style="background-color: #F9F9FB; border-radius: 10px; max-width: 1000px;">
-                    <div class="modal-body">
-                        <div class="d-flex justify-content-between">
-                            <h4 class="fw-bold">Edit Status Pembayaran</h4>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <form action="/operator/pemberi" id="form-edit-status" class="px-3" method="POST">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="ubahStatus">
-                            <input type="hidden" name="id" id="id" value="{{ pembayaran.pembayaran_id }}">
-                            <div class="form-group">
-                                <label for="status" class="pb-1 pt-3">Status Pembayaran</label>
-                                <select class="form-control form-input" name="status" id="status">
-                                    <option selected disabled>Pilih Status Pembayaran</option>
-                                    {% if pembayaran.status == 0 %}
-                                        <option value="0" selected>Gagal</option>
-                                        <option value="1">Menunggu</option>
-                                        <option value="2">Diterima</option>
-                                    {% elif pembayaran.status == 1 %}
-                                        <option value="0">Gagal</option>
-                                        <option value="1" selected>Menunggu</option>
-                                        <option value="2">Diterima</option>
-                                    {% elif pembayaran.status == 2 %}
-                                        <option value="0">Gagal</option>
-                                        <option value="1">Menunggu</option>
-                                        <option value="2" selected>Diterima</option>
-                                    {% else %}
-                                        <option value="0">Gagal</option>
-                                        <option value="1">Menunggu</option>
-                                        <option value="2">Diterima</option>
-                                    {% endif %}
-                                </select>
-                            </div>
-                            <div class="pt-3 text-center pb-2">
-                                <button type="button" class="btn btn-no me-3" data-bs-dismiss="modal">Batal</button>
-                                <button type="submit" class="btn btn-yes">Simpan</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    {% endif %}
+    </div>
+    {% endfor %}
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"

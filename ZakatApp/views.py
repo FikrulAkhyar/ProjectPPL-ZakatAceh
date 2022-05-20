@@ -259,10 +259,9 @@ def pemberiOperator(request):
         }
         
         try :
-            pembayaran = Pembayaran.objects.latest('pembayaran_id')
-            pemberi = Pengguna.objects.get(pengguna_id = pembayaran.pemberi_id)
+            pembayaran = Pembayaran.objects.all()
 
-            return render(request, 'operator/pemberi.html', {'jadwal': jadwal, 'pemberi': pemberi, 'pembayaran': pembayaran})
+            return render(request, 'operator/pemberi.html', {'jadwal': jadwal, 'pembayaran': pembayaran})
         except :
             return render(request, 'operator/pemberi.html', {'jadwal': jadwal})
             
@@ -322,11 +321,13 @@ def penerimaOperator(request):
                 'status': 1
             }
 
-            penerima = Penerima.objects.get(penerima_id=penerima_data['penerima_id'])
-            penerima_serializer = PenerimaSerializers(penerima, data=penerima_data)
-
-            if penerima_serializer.is_valid():
-                penerima_serializer.save()
+            Penerima.objects.filter(penerima_id=penerima_data['penerima_id']).update(
+                nama = penerima_data['nama'],
+                email = penerima_data['email'],
+                nomor_hp = penerima_data['nomor_hp'],
+                nomor_kk = penerima_data['nomor_kk'],
+                alamat = penerima_data['alamat']
+            )
             return redirect('/operator/penerima')
 
 
@@ -419,10 +420,18 @@ def paymethodPemberi(request):
         nominal = request.POST['nominal']
         status = 1
         metode = request.POST['paymentmethod']
+        
+        pemberi = Pengguna.objects.get(pengguna_id = pengguna_id)
 
         pemberi_data = {
             'pemberi': pengguna_id,
             'jadwal': jadwal_id,
+            "email": pemberi.email,
+            "nama": pemberi.nama,
+            "nomor_hp": pemberi.nomor_hp,
+            "nomor_kk": pemberi.nomor_kk,
+            "alamat": pemberi.alamat,
+            "jumlah_anggota_keluarga": pemberi.jumlah_anggota_keluarga,
             'nominal': nominal,
             'status': status
         }

@@ -1,3 +1,4 @@
+from wsgiref.util import request_uri
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
@@ -295,7 +296,7 @@ def penerimaOperator(request):
             jadwal_id = Jadwal.objects.latest('jadwal_id').jadwal_id
 
             penerima_data = {
-                'jadwal_id': jadwal_id,
+                'jadwal': jadwal_id,
                 'nama': request.POST['nama'],
                 'email': request.POST['email'],
                 'nomor_hp': request.POST['nohp'],
@@ -312,7 +313,7 @@ def penerimaOperator(request):
         elif request.POST['action'] == 'ubahPenerima':
             penerima_data = {
                 'penerima_id': request.POST['penerima_id'],
-                'jadwal_id': request.POST['jadwal_id'],
+                'jadwal': request.POST['jadwal_id'],
                 'nama': request.POST['nama'],
                 'email': request.POST['email'],
                 'nomor_hp': request.POST['nohp'],
@@ -330,21 +331,24 @@ def penerimaOperator(request):
 
 
 def homePemberi(request):
-    pengguna = Pengguna.objects.filter(pengguna_id=request.session['pengguna_id'])[0]
-    jadwal = Jadwal.objects.latest('jadwal_id')
-    mulai_pembayaran = jadwal.tanggal_mulai_pembayaran.strftime("%d/%m/%Y")
-    akhir_pembayaran = jadwal.tanggal_akhir_pembayaran.strftime("%d/%m/%Y")
-    harga_beras = jadwal.harga_beras
+    try :
+        pengguna = Pengguna.objects.filter(pengguna_id=request.session['pengguna_id'])[0]
+        jadwal = Jadwal.objects.latest('jadwal_id')
+        mulai_pembayaran = jadwal.tanggal_mulai_pembayaran.strftime("%d/%m/%Y")
+        akhir_pembayaran = jadwal.tanggal_akhir_pembayaran.strftime("%d/%m/%Y")
+        harga_beras = jadwal.harga_beras
 
-    data = {
-        'pengguna': pengguna,
-        'jadwal': jadwal,
-        'mulai_pembayaran': mulai_pembayaran,
-        'akhir_pembayaran': akhir_pembayaran,
-        'harga_beras': harga_beras
-    }
+        data = {
+            'pengguna': pengguna,
+            'jadwal': jadwal,
+            'mulai_pembayaran': mulai_pembayaran,
+            'akhir_pembayaran': akhir_pembayaran,
+            'harga_beras': harga_beras
+        }
 
-    return render(request, 'pemberi/home.html', {'data': data})
+        return render(request, 'pemberi/home.html', {'data': data})
+    except :
+        return render(request, 'pemberi/home.html')
 
 
 def profilePemberi(request):
@@ -433,8 +437,7 @@ def paymethodPemberi(request):
 def scanqrPemberi(request):
     try:
         pengguna_id = request.session['pengguna_id']
-        pembayaran = Pembayaran.objects.filter(
-            pemberi_id=pengguna_id, jadwal_id=Jadwal.objects.latest('jadwal_id'))
+        pembayaran = Pembayaran.objects.filter(pemberi_id=pengguna_id, jadwal_id=Jadwal.objects.latest('jadwal_id'))
 
         for p in pembayaran:
             nominal = p.nominal

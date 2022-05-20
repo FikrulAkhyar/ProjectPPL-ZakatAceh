@@ -19,7 +19,7 @@ class JadwalSerializers(serializers.ModelSerializer):
 class PenerimaSerializers(serializers.ModelSerializer):
     class Meta:
         model = Penerima
-        fields = ('penerima_id', 'jadwal_id', 'nama', 'email',
+        fields = ('penerima_id', 'jadwal', 'nama', 'email',
                   'nomor_hp', 'nomor_kk', 'alamat', 'status')
 
 

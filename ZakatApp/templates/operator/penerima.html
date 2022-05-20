@@ -99,7 +99,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="action" value="ubahPenerima">
                                 <input type="hidden" name="penerima_id" value="{{ penerima.penerima_id }}">
-                                <input type="hidden" name="jadwal_id" value="{{ penerima.jadwal_id_id }}">
+                                <input type="hidden" name="jadwal_id" value="{{ penerima.jadwal }}">
                                 <div class="form-group">
                                     <label for="nama" class="pb-1 pt-3">Nama Lengkap</label>
                                     <input type="text" class="form-control form-input" name="nama" id="nama"

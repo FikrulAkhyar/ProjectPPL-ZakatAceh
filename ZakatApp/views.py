@@ -144,7 +144,7 @@ def signup(request):
             'password': request.POST['password'],
             'email': request.POST['email'],
             'nama': request.POST['nama'],
-            'nomor_hp': request.POST['email'],
+            'nomor_hp': request.POST['nomor_hp'],
         }
 
         password = request.POST['password']

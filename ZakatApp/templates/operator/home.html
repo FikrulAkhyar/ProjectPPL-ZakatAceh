@@ -36,7 +36,11 @@
                         <div class="text-center">
                             <i class="fad fa-hand-holding-usd fa-2x"></i>
                             <br>Pemberi<br>(jiwa)
+                            {% if data.jumlahPemberi %}
                             <p>{{ data.jumlahPemberi }}</p>
+                            {% else %}
+                            <p>0</p>
+                            {% endif %}
                         </div>
                         <div class="text-center">
                             <i class="fad fa-money-bill fa-2x"></i>
@@ -50,7 +54,11 @@
                         <div class="text-center">
                             <i class="fad fa-handshake fa-2x"></i>
                             <br>Penerima<br>(jiwa)
+                            {% if data.jumlahPenerima %}
                             <p>{{ data.jumlahPenerima }}</p>
+                            {% else %}
+                            <p>0</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

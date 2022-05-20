@@ -395,6 +395,10 @@ def paymentPemberi(request):
             messages.error(request, "Harap isi jumlah pemberi zakat!")
             return redirect('/pemberi/payment')
 
+        pemberi_id = request.session['pengguna_id']
+        
+        Pengguna.objects.filter(pengguna_id = pemberi_id).update(jumlah_anggota_keluarga = jumlah_pemberi_zakat)
+        
         harga_beras = Jadwal.objects.latest('jadwal_id').harga_beras
 
         nominal = int(2.5 * harga_beras * int(jumlah_pemberi_zakat))
